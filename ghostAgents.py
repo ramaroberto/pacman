@@ -79,7 +79,45 @@ class DirectionalGhost( GhostAgent ):
         for a in legalActions: dist[a] += ( 1-bestProb ) / len(legalActions)
         dist.normalize()
         return dist
-	
+
+class KeyTrainningGhost( GhostAgent ):
+    "A ghost that prefers to rush Pacman, or flee when scared."
+    def __init__( self, index, prob_attack=0.8, prob_scaredFlee=0.8 ):
+        self.index = index
+        self.prob_attack = prob_attack
+        self.prob_scaredFlee = prob_scaredFlee
+
+    def getDistribution( self, state ):
+        # Read variables from state
+        ghostState = state.getGhostState( self.index )
+        legalActions = state.getLegalActions( self.index )
+        pos = state.getGhostPosition( self.index )
+        isScared = ghostState.scaredTimer > 0
+
+        speed = 1
+        if isScared: speed = 0.5
+
+        actionVectors = [Actions.directionToVector( a, speed ) for a in legalActions]
+        newPositions = [( pos[0]+a[0], pos[1]+a[1] ) for a in actionVectors]
+        pacmanPosition = state.getPacmanPosition()
+
+        # Select best actions given the state
+        distancesToPacman = [manhattanDistance( pos, pacmanPosition ) for pos in newPositions]
+        if isScared:
+            bestScore = max( distancesToPacman )
+            bestProb = self.prob_scaredFlee
+        else:
+            bestScore = min( distancesToPacman )
+            bestProb = self.prob_attack
+        bestActions = [action for action, distance in zip( legalActions, distancesToPacman ) if distance == bestScore]
+
+        # Construct distribution
+        dist = util.Counter()
+        for a in bestActions: dist[a] = bestProb / len(bestActions)
+        for a in legalActions: dist[a] += ( 1-bestProb ) / len(legalActions)
+        dist.normalize()
+        return dist
+
 class KeyboardGhost( GhostAgent ):
         """
         A ghost controlled by the keyboard.
@@ -95,32 +133,32 @@ class KeyboardGhost( GhostAgent ):
             self.lastMove = Directions.STOP
             self.index = index
             self.keys = []
-			
-			# Binding of keys
-			# Up to 4 players
+
+            # Binding of keys
+            # Up to 4 players
             if index == 1:
-				self.NORTH_KEY = 'Up'
+                self.NORTH_KEY = 'Up'
                 self.WEST_KEY  = 'Left'
                 self.SOUTH_KEY = 'Down'
                 self.EAST_KEY  = 'Right'
                 self.STOP_KEY = 'Space'
-                
+
             if index == 2:
-				self.NORTH_KEY = 'w'
+                self.NORTH_KEY = 'w'
                 self.WEST_KEY  = 'a'
                 self.SOUTH_KEY = 's'
                 self.EAST_KEY  = 'd'
                 self.STOP_KEY = 'q'
-                
-			if index == 3:
-				self.NORTH_KEY = 't'
+
+            if index == 3:
+                self.NORTH_KEY = 't'
                 self.WEST_KEY  = 'f'
                 self.SOUTH_KEY = 'g'
                 self.EAST_KEY  = 'h'
                 self.STOP_KEY = 'r'
-			
-			if index == 4:
-				self.NORTH_KEY = 'i'
+
+            if index == 4:
+                self.NORTH_KEY = 'i'
                 self.WEST_KEY  = 'j'
                 self.SOUTH_KEY = 'k'
                 self.EAST_KEY  = 'l'
