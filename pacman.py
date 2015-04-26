@@ -83,13 +83,23 @@ class GameState:
         """
         Returns the legal actions for the agent specified.
         """
-#        GameState.explored.add(self)
         if self.isWin() or self.isLose(): return []
 
         if agentIndex == 0:  # Pacman is moving
             return PacmanRules.getLegalActions( self )
         else:
             return GhostRules.getLegalActions( self, agentIndex )
+        
+    def getOriginalLegalActions( self, agentIndex=0 ):
+        """
+        Returns the legal actions for the agent specified.
+        """
+        if self.isWin() or self.isLose(): return []
+
+        if agentIndex == 0:  # Pacman is moving
+            return PacmanRules.getLegalActions( self )
+        else:
+            return GhostRules.getOriginalLegalActions( self, agentIndex )
 
     def generateSuccessor( self, agentIndex, action):
         """
@@ -389,15 +399,33 @@ class GhostRules:
     These functions dictate how ghosts interact with their environment.
     """
     GHOST_SPEED=1.0
+    
     def getLegalActions( state, ghostIndex ):
         """
         Ghosts cannot stop, and cannot turn around unless they
         reach a dead end, but can turn 90 degrees at intersections.
         """
         conf = state.getGhostState( ghostIndex ).configuration
-        possibleActions = Actions.getPossibleActions( conf, state.data.layout.walls )
+        possibleActions = Actions.getPossibleActions( conf, state.data.layout.walls )        
         return possibleActions
     getLegalActions = staticmethod( getLegalActions )
+    
+    def getOriginalLegalActions( state, ghostIndex ):
+        """
+        Ghosts cannot stop, and cannot turn around unless they
+        reach a dead end, but can turn 90 degrees at intersections.
+        """
+        conf = state.getGhostState( ghostIndex ).configuration
+        possibleActions = Actions.getPossibleActions( conf, state.data.layout.walls )
+        
+        reverse = Actions.reverseDirection( conf.direction )
+        if Directions.STOP in possibleActions:
+            possibleActions.remove( Directions.STOP )
+        if reverse in possibleActions and len( possibleActions ) > 1:
+            possibleActions.remove( reverse )
+        
+        return possibleActions
+    getOriginalLegalActions = staticmethod( getOriginalLegalActions )
 
     def applyAction( state, action, ghostIndex):
 
@@ -553,8 +581,13 @@ def readCommand( argv ):
         options.numIgnore = int(agentOpts['numTrain'])
 
     # Choose a ghost agent
-    ghostType = loadAgent(options.ghost, noKeyboard)
-    args['ghosts'] = [ghostType( i+1 ) for i in range( options.numGhosts )]
+    if options.ghost == "KeyboardGhost":
+        ghostType = loadAgent(options.ghost, noKeyboard)
+        args['keyboardGhosts'] = [ghostType( i+1 ) for i in range( options.numGhosts )]
+        
+        ghostType = loadAgent("KeyboardTrainningGhost", noKeyboard)
+        args['ghosts'] = [ghostType( i+1 ) for i in range( options.numGhosts )]
+    
 
     # Choose a display format
     if options.quietGraphics:
@@ -626,7 +659,7 @@ def replayGame( layout, actions, display ):
 
     display.finish()
 
-def runGames( layout, pacman, ghosts, display, numGames, record, numTraining = 0, catchExceptions=False, timeout=30 ):
+def runGames( layout, pacman, ghosts, display, numGames, record, numTraining = 0, catchExceptions=False, timeout=30, keyboardGhosts=[] ):
     import __main__
     __main__.__dict__['_display'] = display
 
@@ -643,6 +676,8 @@ def runGames( layout, pacman, ghosts, display, numGames, record, numTraining = 0
         else:
             gameDisplay = display
             rules.quiet = False
+            
+        #NOTE
         game = rules.newGame( layout, pacman, ghosts, gameDisplay, beQuiet, catchExceptions)
         game.run()
         if not beQuiet: games.append(game)
