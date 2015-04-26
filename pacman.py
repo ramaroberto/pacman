@@ -585,7 +585,7 @@ def readCommand( argv ):
         ghostType = loadAgent(options.ghost, noKeyboard)
         args['keyboardGhosts'] = [ghostType( i+1 ) for i in range( options.numGhosts )]
         
-        ghostType = loadAgent("KeyboardTrainningGhost", noKeyboard)
+        ghostType = loadAgent("KeyboardTrainingGhost", noKeyboard)
         args['ghosts'] = [ghostType( i+1 ) for i in range( options.numGhosts )]
     
 
@@ -667,6 +667,7 @@ def runGames( layout, pacman, ghosts, display, numGames, record, numTraining = 0
     games = []
 
     for i in range( numGames ):
+        game = None
         beQuiet = i < numTraining
         if beQuiet:
                 # Suppress output and graphics
@@ -676,10 +677,14 @@ def runGames( layout, pacman, ghosts, display, numGames, record, numTraining = 0
         else:
             gameDisplay = display
             rules.quiet = False
-            
-        #NOTE
-        game = rules.newGame( layout, pacman, ghosts, gameDisplay, beQuiet, catchExceptions)
+        
+        # If there's keyboard ghosts and not in training mode
+        if len(keyboardGhosts) > 0 and not beQuiet:
+            game = rules.newGame( layout, pacman, keyboardGhosts, gameDisplay, beQuiet, catchExceptions)
+        else:
+            game = rules.newGame( layout, pacman, ghosts, gameDisplay, beQuiet, catchExceptions)
         game.run()
+        
         if not beQuiet: games.append(game)
 
         if record:
