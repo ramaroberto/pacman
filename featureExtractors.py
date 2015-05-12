@@ -63,6 +63,39 @@ def closestFood(pos, food, walls):
     # no food found
     return None
 
+def distanceToGhost(pos, ghost, walls):
+    """
+    closestFood -- this is similar to the function that we have
+    worked on in the search project; here its all in one place
+    """
+    fringe = [(pos[0], pos[1], 0)]
+    expanded = set()
+    while fringe:
+        pos_x, pos_y, dist = fringe.pop(0)
+        if (pos_x, pos_y) in expanded:
+            continue
+        expanded.add((pos_x, pos_y))
+        # if we find the ghost at this location then exit
+        if (pos_x, pos_y) == (int(ghost[0]), int(ghost[1])):
+            return dist
+        #if ghosts[pos_x][pos_y]:
+        #    return dist
+        # otherwise spread out from the location to its neighbours
+        nbrs = Actions.getLegalNeighbors((pos_x, pos_y), walls)
+        for nbr_x, nbr_y in nbrs:
+            fringe.append((nbr_x, nbr_y, dist+1))
+    # no ghosts found
+    return None
+
+def distanceToGhosts(pos, ghosts, walls):
+    result = []
+    for ghost in ghosts:
+        result.append(distanceToGhost(pos, ghost, walls))
+    return result
+
+def distanceToClosestGhost(pos, ghosts, walls):
+    return min(distanceToGhosts(pos, ghosts, walls))
+
 class SimpleExtractor(FeatureExtractor):
     """
     Returns simple features for a basic reflex Pacman:
@@ -71,6 +104,11 @@ class SimpleExtractor(FeatureExtractor):
     - whether a ghost collision is imminent
     - whether a ghost is one step away
     """
+    
+    # Detectar cuando se encuentre en un tunel: Dar la distancia a la salida mas cercana hacia donde se este mirando?
+    # Detectar la posicion de todos los fantasmas: Un feature por fantasma, y asignar el valor 1/distGhost
+    # Diferenciar pills
+    # Diferenciar scared ghost
 
     def getFeatures(self, state, action):
         # extract the grid of food and wall locations and get the ghost locations
@@ -94,7 +132,13 @@ class SimpleExtractor(FeatureExtractor):
         #if features["#-of-ghosts-1-step-away"] > 0:
         #    ghosts_close = [state.getGhostStateFromPosition(g) for g in ghosts if (next_x, next_y) in Actions.getLegalNeighbors(g, walls)]
         #    print ghosts_close[0].isScared()
-
+        
+        #print (next_x, next_y)
+        ghostsDists = distanceToGhosts((next_x, next_y), ghosts, walls)
+        for gi in range(len(ghostsDists)):
+            #features["distance-to-ghost-"+str(gi+1)] = 1/(float(ghostsDists[gi]+0.0000000001) * (walls.width * walls.height))
+            features["distance-to-ghost-"+str(gi+1)] = (float(ghostsDists[gi]) / (walls.width * walls.height))
+        
         # if there is no danger of ghosts then add the food feature
         if not features["#-of-ghosts-1-step-away"] and food[next_x][next_y]:
             features["eats-food"] = 1.0
