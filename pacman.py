@@ -587,7 +587,9 @@ def readCommand( argv ):
         
         ghostType = loadAgent("KeyboardTrainingGhost", noKeyboard)
         args['ghosts'] = [ghostType( i+1 ) for i in range( options.numGhosts )]
-    
+    else:
+        ghostType = loadAgent(options.ghost, noKeyboard)
+        args['ghosts'] = [ghostType( i+1 ) for i in range( options.numGhosts )]
 
     # Choose a display format
     if options.quietGraphics:
@@ -718,6 +720,7 @@ if __name__ == '__main__':
     > python pacman.py --help
     """
     args = readCommand( sys.argv[1:] ) # Get game components based on input
+    print args
     runGames( **args )
 
     # import cProfile
