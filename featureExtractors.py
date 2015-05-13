@@ -96,6 +96,9 @@ def distanceToGhosts(pos, ghosts, walls):
 def distanceToClosestGhost(pos, ghosts, walls):
     return min(distanceToGhosts(pos, ghosts, walls))
 
+def isScared(state, ghost):
+    return state.getGhostStateFromPosition(ghost).isScared()
+
 class SimpleExtractor(FeatureExtractor):
     """
     Returns simple features for a basic reflex Pacman:
@@ -127,29 +130,28 @@ class SimpleExtractor(FeatureExtractor):
         next_x, next_y = int(x + dx), int(y + dy)
 
         # count the number of ghosts 1-step away
-        features["#-of-ghosts-1-step-away"] = sum((next_x, next_y) in Actions.getLegalNeighbors(g, walls) for g in ghosts if not state.getGhostStateFromPosition(g).isScared())
+        features["#-of-ghosts-1-step-away"] = sum((next_x, next_y) in Actions.getLegalNeighbors(g, walls) for g in ghosts if not isScared(state, g))
         
-        #if features["#-of-ghosts-1-step-away"] > 0:
-        #    ghosts_close = [state.getGhostStateFromPosition(g) for g in ghosts if (next_x, next_y) in Actions.getLegalNeighbors(g, walls)]
-        #    print ghosts_close[0].isScared()
-        
-        #print (next_x, next_y)
+        # calculate distances
+        dist = closestFood((next_x, next_y), food, walls)
         ghostsDists = distanceToGhosts((next_x, next_y), ghosts, walls)
-        for gi in range(len(ghostsDists)):
-            #features["distance-to-ghost-"+str(gi+1)] = 1/(float(ghostsDists[gi]+0.0000000001) * (walls.width * walls.height))
-            features["distance-to-ghost-"+str(gi+1)] = (float(ghostsDists[gi]) / (walls.width * walls.height))
         
         # if there is no danger of ghosts then add the food feature
-        if not features["#-of-ghosts-1-step-away"] and food[next_x][next_y]:
+        if (not features["#-of-ghosts-1-step-away"] and food[next_x][next_y]) and (dist < min(ghostsDists) and food[next_x][next_y]):
             features["eats-food"] = 1.0
-            #features["#-of-ghosts-1-step-away-scared"] = sum((next_x, next_y) in Actions.getLegalNeighbors(g, walls) for g in ghosts if state.getGhostStateFromPosition(g).isScared())
+        
+        #closest_scared = None
+        for gi in range(len(ghostsDists)):
+            if not isScared(state, ghosts[gi]):
+                features["distance-to-ghost-"+str(gi+1)] = (float(ghostsDists[gi]) / (walls.width * walls.height))
+        #    else:
+        #        if (closest_scared is None) or (closest_scared < ghostsDists[gi]):
+        #            closest_scared = ghostsDists[gi]
+                    
+        #if closest_scared is not None:
+        #    features["distance-to-scared"] = (float(closest_scared) / (walls.width * walls.height))
 
-        dist = closestFood((next_x, next_y), food, walls)
         if dist is not None:
-            # add the scared ghosts to the food array -- correct this, should weight more
-            #for gp in ghosts:
-            #    if state.getGhostStateFromPosition(gp).isScared():
-            #        food[int(gp[0])][int(gp[1])] = True
             # make the distance a number less than one otherwise the update
             # will diverge wildly
             features["closest-food"] = float(dist) / (walls.width * walls.height)
