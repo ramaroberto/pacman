@@ -41,21 +41,27 @@ class CoordinateExtractor(FeatureExtractor):
         feats['action=%s' % action] = 1.0
         return feats
 
-def closestFood(pos, food, walls):
+def closestFood(pos, food, ghosts, walls):
     """
     closestFood -- this is similar to the function that we have
     worked on in the search project; here its all in one place
     """
+    occupied = set()
+    for ghost in ghosts:
+        occupied.add((int(ghost[0]), int(ghost[1])))
+    
     fringe = [(pos[0], pos[1], 0)]
-    expanded = set()
+    expanded = set()    
     while fringe:
         pos_x, pos_y, dist = fringe.pop(0)
         if (pos_x, pos_y) in expanded:
             continue
         expanded.add((pos_x, pos_y))
         # if we find a food at this location then exit
+        # check if there's a ghost at location too
         if food[pos_x][pos_y]:
-            return dist
+            if (pos_x, pos_y) not in occupied:
+                return dist
         # otherwise spread out from the location to its neighbours
         nbrs = Actions.getLegalNeighbors((pos_x, pos_y), walls)
         for nbr_x, nbr_y in nbrs:
@@ -78,8 +84,6 @@ def distanceToGhost(pos, ghost, walls):
         # if we find the ghost at this location then exit
         if (pos_x, pos_y) == (int(ghost[0]), int(ghost[1])):
             return dist
-        #if ghosts[pos_x][pos_y]:
-        #    return dist
         # otherwise spread out from the location to its neighbours
         nbrs = Actions.getLegalNeighbors((pos_x, pos_y), walls)
         for nbr_x, nbr_y in nbrs:
@@ -133,7 +137,7 @@ class SimpleExtractor(FeatureExtractor):
         features["#-of-ghosts-1-step-away"] = sum((next_x, next_y) in Actions.getLegalNeighbors(g, walls) for g in ghosts if not isScared(state, g))
         
         # calculate distances
-        dist = closestFood((next_x, next_y), food, walls)
+        dist = closestFood((next_x, next_y), food, ghosts, walls)
         ghostsDists = distanceToGhosts((next_x, next_y), ghosts, walls)
         
         # if there is no danger of ghosts then add the food feature
