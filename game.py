@@ -573,11 +573,9 @@ class Game:
         """
         if display is None:
             self.display.initialize(self.state.data)
-            print "Display is none"
         else:
             self.display = display
             self.display.resetStage(self.state.data)
-            print "Display is present"
         self.numMoves = 0
 
         ###self.display.initialize(self.state.makeObservation(1).data)
