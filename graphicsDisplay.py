@@ -203,7 +203,7 @@ class PacmanGraphics:
 
     def drawStaticObjects(self, state):
         layout = self.layout
-        self.drawWalls(layout.walls)
+        self.wallsImages = self.drawWalls(layout.walls)
         self.food = self.drawFood(layout.food)
         self.capsules = self.drawCapsules(layout.capsules)
         refresh()
@@ -233,6 +233,10 @@ class PacmanGraphics:
     def removeAllCapsules(self):
         for key in self.capsules:
             remove_from_screen(self.capsules[key])
+            
+    def removeWalls(self):
+        for image in self.wallsImages:
+            remove_from_screen(image)
         
     def resetStage(self, state):
         layout = state.layout
@@ -240,6 +244,7 @@ class PacmanGraphics:
         self.removeAllFood()
         self.removeAllCapsules()
         self.removeAgents()
+        self.removeWalls()
         
         self.food = self.drawFood(layout.food)
         self.capsules = self.drawCapsules(layout.capsules)
