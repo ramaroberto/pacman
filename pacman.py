@@ -689,11 +689,14 @@ def runGames( layout, pacman, ghosts, display, numGames, record, numTraining = 0
             game = rules.newGame( layout, pacman, keyboardGhosts, gameDisplay, beQuiet, catchExceptions)
         else:
             game = rules.newGame( layout, pacman, ghosts, gameDisplay, beQuiet, catchExceptions)
-            
-        if savedDisplay is None:
-            savedDisplay = game.run()
+
+        if beQuiet:
+            game.run()
         else:
-            savedDisplay = game.run(savedDisplay)
+            if savedDisplay is None:
+                savedDisplay = game.run()
+            else:
+                savedDisplay = game.run(savedDisplay)
         
         if not beQuiet: games.append(game)
 
