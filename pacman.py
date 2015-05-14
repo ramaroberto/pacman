@@ -552,6 +552,8 @@ def readCommand( argv ):
                       help='Turns on exception handling and timeouts during games', default=False)
     parser.add_option('--timeout', dest='timeout', type='int',
                       help=default('Maximum length of time an agent can spend computing in a single game'), default=30)
+    parser.add_option('--gameMenu', action='store_true', dest='gameMenu',
+                      help='Add the game menu', default=False)
 
     options, otherjunk = parser.parse_args(argv)
     if len(otherjunk) != 0:
@@ -606,6 +608,7 @@ def readCommand( argv ):
     args['record'] = options.record
     args['catchExceptions'] = options.catchExceptions
     args['timeout'] = options.timeout
+    args['gameMenu'] = options.gameMenu
 
     # Special case: recorded games don't use the runGames method or args structure
     if options.gameToReplay != None:
@@ -661,14 +664,53 @@ def replayGame( layout, actions, display ):
 
     display.finish()
 
-def runGames( layout, pacman, ghosts, display, numGames, record, numTraining = 0, catchExceptions=False, timeout=30, keyboardGhosts=[] ):
+def runGamesWithMenu( layout, pacman, ghosts, display, numGames, record, numTraining = 0, catchExceptions=False, timeout=30, keyboardGhosts=[], savedDisplay=None ):
+    import __main__
+    __main__.__dict__['_display'] = display
+    
+    rules = ClassicGameRules(timeout)
+    games = []
+    
+    max_players = len(ghosts)
+    
+    # Pantalla inicial, esperar a que se seleccione la cantidad de jugadores.
+    # La cantidad maxima estara dada por max_players
+    # TODO: Inicializar pantalla, el display ya esta inicializado
+        # textDisplay.NullGraphics()
+        # textDisplay.PacmanGraphics()
+        # graphicsDisplay.PacmanGraphics(options.zoom, frameTime = options.frameTime)
+        # Con la opcion --frameTime -1, se puede hacer por frames
+    # TODO: Mostrar pantalla inicial y capturar seleccion
+    
+    # Una vez seleccionados damos 1 juego de practica y 3 juegos sin entrenamiento
+    games, display = runGames(layout, pacman, ghosts, display, 1, record, 0, catchExceptions, timeout, keyboardGhosts, savedDisplay=None)
+    
+    
+    # Entrenamos 20 (?) epocas
+    # 3 juegos mas con dificultad media
+    print "Pacman is training..."
+    games, display = runGames(layout, pacman, ghosts, display, 21, record, 20, catchExceptions, timeout, keyboardGhosts, savedDisplay=None)
+    
+    # Entrenamos 100 (?) epocas
+    # 3 juegos mas con dificultad dificil
+    print "Pacman is training..."
+    games, display = runGames(layout, pacman, ghosts, display, 101, record, 100, catchExceptions, timeout, keyboardGhosts, savedDisplay=None)
+    
+    # Fin del juego, presentamos tabla de score para anotar un nombre.
+        # Esto en vez de una tabla podria ser el score minimo del dia
+        # En caso de un score minimo nuevo, se anotarian los mails del equipo en una planilla
+        # Habria que guardar este score en un archivo o poder darlo por parametro en caso de perdida
+    # Podriamos mostrar pantallas distintas para el caso de que el min_score sea superado y otra para el caso en el que no lo sea
+    # Luego de un tiempo de mostrar el score final, volveriamos a la pantalla inicial
+        
+
+def runGames( layout, pacman, ghosts, display, numGames, record, numTraining = 0, catchExceptions=False, timeout=30, keyboardGhosts=[], savedDisplay=None ):
     import __main__
     __main__.__dict__['_display'] = display
 
     rules = ClassicGameRules(timeout)
     games = []
     
-    savedDisplay = None
     for i in range( numGames ):
         game = None
         beQuiet = i < numTraining
@@ -717,7 +759,7 @@ def runGames( layout, pacman, ghosts, display, numGames, record, numTraining = 0
         print 'Win Rate:      %d/%d (%.2f)' % (wins.count(True), len(wins), winRate)
         print 'Record:       ', ', '.join([ ['Loss', 'Win'][int(w)] for w in wins])
 
-    return games
+    return (games, display)
 
 if __name__ == '__main__':
     """
@@ -731,7 +773,13 @@ if __name__ == '__main__':
     > python pacman.py --help
     """
     args = readCommand( sys.argv[1:] ) # Get game components based on input
-    runGames( **args )
+    
+    if args['gameMenu']:
+        args.pop('gameMenu')
+        runGamesWithMenu( **args )
+    else:
+        args.pop('gameMenu')
+        runGames( **args )
 
     # import cProfile
     # cProfile.run("runGames( **args )")
