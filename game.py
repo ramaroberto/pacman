@@ -567,11 +567,26 @@ class Game:
         sys.stderr = OLD_STDERR
 
 
-    def run( self ):
+    def run( self, display = None ):
         """
         Main control loop for game play.
         """
-        self.display.initialize(self.state.data)
+        if display is None:
+            self.display.initialize(self.state.data)
+            print "Display is none"
+        else:
+            self.display = display
+            layout = self.state.data.layout
+            #self.display.drawFood(layout.food)
+            #self.display.drawCapsules(layout.capsules)
+            
+            #self.display.food = None
+            #self.display.capsules = None
+            #self.display.drawStaticObjects(self.state.data)
+            #self.display.drawAgentObjects(self.state.data)
+            
+            #self.display.drawAgentObjects(self.state.data)
+            print "Display is present"
         self.numMoves = 0
 
         ###self.display.initialize(self.state.makeObservation(1).data)
@@ -729,4 +744,5 @@ class Game:
                     self._agentCrash(agentIndex)
                     self.unmute()
                     return
-        self.display.finish()
+        #self.display.finish()
+        return self.display

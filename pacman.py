@@ -667,7 +667,8 @@ def runGames( layout, pacman, ghosts, display, numGames, record, numTraining = 0
 
     rules = ClassicGameRules(timeout)
     games = []
-
+    
+    savedDisplay = None
     for i in range( numGames ):
         game = None
         beQuiet = i < numTraining
@@ -677,7 +678,10 @@ def runGames( layout, pacman, ghosts, display, numGames, record, numTraining = 0
             gameDisplay = textDisplay.NullGraphics()
             rules.quiet = True
         else:
-            gameDisplay = display
+            if savedDisplay is None:
+                gameDisplay = display
+            else:
+                gameDisplay = savedDisplay
             rules.quiet = False
         
         # If there's keyboard ghosts and not in training mode
@@ -685,7 +689,11 @@ def runGames( layout, pacman, ghosts, display, numGames, record, numTraining = 0
             game = rules.newGame( layout, pacman, keyboardGhosts, gameDisplay, beQuiet, catchExceptions)
         else:
             game = rules.newGame( layout, pacman, ghosts, gameDisplay, beQuiet, catchExceptions)
-        game.run()
+            
+        if savedDisplay is None:
+            savedDisplay = game.run()
+        else:
+            savedDisplay = game.run(savedDisplay)
         
         if not beQuiet: games.append(game)
 

@@ -176,6 +176,8 @@ class PacmanGraphics:
 
         # Information
         self.previousState = state
+        
+        #print self.agentImages
 
     def startGraphics(self, state):
         self.layout = state.layout
