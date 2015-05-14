@@ -244,7 +244,6 @@ class PacmanGraphics:
         self.removeAllFood()
         self.removeAllCapsules()
         self.removeAgents()
-        self.removeWalls()
         
         self.food = self.drawFood(layout.food)
         self.capsules = self.drawCapsules(layout.capsules)
@@ -547,7 +546,7 @@ class PacmanGraphics:
                         boardImages.append(circle(add(screen2, (self.gridSize*(-2)*WALL_RADIUS, self.gridSize*(2)*WALL_RADIUS)), WALL_RADIUS * self.gridSize-1, wallColor, wallColor, (0,91), 'arc'))
                         boardImages.append(line(add(screen, (self.gridSize*(-2)*WALL_RADIUS+1, self.gridSize*(1)*WALL_RADIUS)), add(screen, (self.gridSize*(-0.5), self.gridSize*(1)*WALL_RADIUS)), wallColor))
                         boardImages.append(line(add(screen, (self.gridSize*(-1)*WALL_RADIUS, self.gridSize*(2)*WALL_RADIUS-1)), add(screen, (self.gridSize*(-1)*WALL_RADIUS, self.gridSize*(0.5))), wallColor))
-    return boardImages
+        return boardImages
 
     def isWall(self, x, y, walls):
         if x < 0 or y < 0:
