@@ -176,8 +176,6 @@ class PacmanGraphics:
 
         # Information
         self.previousState = state
-        
-        #print self.agentImages
 
     def startGraphics(self, state):
         self.layout = state.layout
@@ -219,6 +217,34 @@ class PacmanGraphics:
             else:
                 image = self.drawGhost(agent, index)
                 self.agentImages.append( (agent, image) )
+        refresh()
+        
+    def removeAgents(self):
+        for agent, image in self.agentImages:
+            for item in image:
+                remove_from_screen(item)
+        
+    def removeAllFood(self):
+        for i in range(len(self.food)):
+            for j in range(len(self.food[i])):
+                if self.food[i][j] is not None:
+                    remove_from_screen(self.food[i][j])
+                    
+    def removeAllCapsules(self):
+        for key in self.capsules:
+            remove_from_screen(self.capsules[key])
+        
+    def resetStage(self, state):
+        layout = state.layout
+        
+        self.removeAllFood()
+        self.removeAllCapsules()
+        self.removeAgents()
+        
+        self.food = self.drawFood(layout.food)
+        self.capsules = self.drawCapsules(layout.capsules)
+        self.drawAgentObjects(state)
+        
         refresh()
 
     def swapImages(self, agentIndex, newState):

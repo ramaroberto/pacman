@@ -576,16 +576,7 @@ class Game:
             print "Display is none"
         else:
             self.display = display
-            layout = self.state.data.layout
-            #self.display.drawFood(layout.food)
-            #self.display.drawCapsules(layout.capsules)
-            
-            #self.display.food = None
-            #self.display.capsules = None
-            #self.display.drawStaticObjects(self.state.data)
-            #self.display.drawAgentObjects(self.state.data)
-            
-            #self.display.drawAgentObjects(self.state.data)
+            self.display.resetStage(self.state.data)
             print "Display is present"
         self.numMoves = 0
 
