@@ -571,11 +571,9 @@ class Game:
         """
         Main control loop for game play.
         """
-        if display is None:
-            self.display.initialize(self.state.data)
-        else:
+        if display is not None:
             self.display = display
-            self.display.resetStage(self.state.data)
+        self.display.initialize(self.state.data)
         self.numMoves = 0
 
         ###self.display.initialize(self.state.makeObservation(1).data)
