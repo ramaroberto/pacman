@@ -162,22 +162,37 @@ class PacmanGraphics:
         self.capture = capture
         self.frameTime = frameTime
         self.isWindowOpen = False
+        self.isInitialized = False
+        self.lastMode = None
 
     def checkNullDisplay(self):
         return False
+    
+    # TODO: Investigar la pantalla completa
+    # TODO: Hay que agregar funciones de inicializacion para la pantalla de inicio y carga.
+    # TODO: Hay que agregar un clear para los graficos del pacman, para la pantalla de inicio y la de carga.
+    # TODO: Quizas sea mejor centralizar todo esto por medio de algo como un switch que autodetecte en que pantalla del flow se encuentra? -- HECHO
+    def initialize(self, state, mode = "pacman", isBlue = False):
+        
+        if self.lastMode == "pacman":   # Clear pacman procedure
+            self.removeStaticObjects(not mode == "pacman")
+            self.removeAgents()
+        
+        if mode == "pacman":            # Initialize pacman procedure
+            self.isBlue = isBlue
+            if not self.isWindowOpen:
+                self.startGraphics(state)
 
-    def initialize(self, state, isBlue = False):
-        self.isBlue = isBlue
-        if not self.isWindowOpen:
-            self.startGraphics(state)
+            # self.drawDistributions(state)
+            self.distributionImages = None  # Initialized lazily
+            self.drawStaticObjects(state)
+            self.drawAgentObjects(state)
 
-        # self.drawDistributions(state)
-        self.distributionImages = None  # Initialized lazily
-        self.drawStaticObjects(state)
-        self.drawAgentObjects(state)
-
-        # Information
-        self.previousState = state
+            # Information
+            self.previousState = state
+        
+        # Save last mode
+        self.lastMode = mode
 
     def startGraphics(self, state):
         self.layout = state.layout
@@ -188,7 +203,6 @@ class PacmanGraphics:
             self.make_window(self.width, self.height)
         self.infoPane = InfoPane(layout, self.gridSize)
         self.currentState = layout
-        self.isWindowOpen = True
 
     def drawDistributions(self, state):
         walls = state.layout.walls
@@ -241,17 +255,22 @@ class PacmanGraphics:
     def removeWalls(self):
         for image in self.wallsImages:
             remove_from_screen(image)
+            
+    def removeStaticObjects(self, removeWalls=True):
+        self.removeAllFood()
+        self.removeAllCapsules()
+        if removeWalls: # Prevent flash
+            self.removeWalls()
         
     def resetStage(self, state):
         layout = state.layout
         
-        self.removeAllFood()
-        self.removeAllCapsules()
+        self.removeStaticObjects()
         self.removeAgents()
         
-        self.food = self.drawFood(layout.food)
-        self.capsules = self.drawCapsules(layout.capsules)
-        self.drawAgentObjects(state)
+        self.drawStaticObjects(self, state)
+        
+        self.previousState = state
         
         refresh()
 
@@ -304,7 +323,7 @@ class PacmanGraphics:
                        "CS188 Pacman")
         
         self.isWindowOpen = True
-        #TODO: FIXTHIS
+        #TODO: Esto depende de gridSize, no deberia. O habria que buscar algun comando para resize.
 
     def drawPacman(self, pacman, index):
         position = self.getPosition(pacman)
