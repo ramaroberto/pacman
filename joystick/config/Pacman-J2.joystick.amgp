@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<joystick configversion="17" appversion="2.14">
+    <!--The SDL name for a joystick is included for informational purposes only.-->
+    <sdlname>2-Axis,8-Button  </sdlname>
+    <!--The GUID for a joystick is included for informational purposes only.-->
+    <guid>030000008305000000a0000010010000</guid>
+    <sets>
+        <set index="1">
+            <axis index="1">
+                <deadZone>15000</deadZone>
+                <axisbutton index="1">
+                    <slots>
+                        <slot>
+                            <code>0x41</code>
+                            <mode>keyboard</mode>
+                        </slot>
+                    </slots>
+                </axisbutton>
+                <axisbutton index="2">
+                    <slots>
+                        <slot>
+                            <code>0x44</code>
+                            <mode>keyboard</mode>
+                        </slot>
+                    </slots>
+                </axisbutton>
+            </axis>
+            <axis index="2">
+                <deadZone>15000</deadZone>
+                <axisbutton index="1">
+                    <slots>
+                        <slot>
+                            <code>0x57</code>
+                            <mode>keyboard</mode>
+                        </slot>
+                    </slots>
+                </axisbutton>
+                <axisbutton index="2">
+                    <slots>
+                        <slot>
+                            <code>0x53</code>
+                            <mode>keyboard</mode>
+                        </slot>
+                    </slots>
+                </axisbutton>
+            </axis>
+        </set>
+    </sets>
+</joystick>

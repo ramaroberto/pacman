@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<joystick configversion="17" appversion="2.14">
+    <!--The SDL name for a joystick is included for informational purposes only.-->
+    <sdlname>2-Axis,8-Button  </sdlname>
+    <!--The GUID for a joystick is included for informational purposes only.-->
+    <guid>030000008305000000a0000010010000</guid>
+    <sets>
+        <set index="1">
+            <axis index="1">
+                <deadZone>15000</deadZone>
+                <axisbutton index="1">
+                    <slots>
+                        <slot>
+                            <code>0x1000012</code>
+                            <mode>keyboard</mode>
+                        </slot>
+                    </slots>
+                </axisbutton>
+                <axisbutton index="2">
+                    <slots>
+                        <slot>
+                            <code>0x1000014</code>
+                            <mode>keyboard</mode>
+                        </slot>
+                    </slots>
+                </axisbutton>
+            </axis>
+            <axis index="2">
+                <deadZone>15000</deadZone>
+                <maxZone>32100</maxZone>
+                <axisbutton index="1">
+                    <slots>
+                        <slot>
+                            <code>0x1000013</code>
+                            <mode>keyboard</mode>
+                        </slot>
+                    </slots>
+                </axisbutton>
+                <axisbutton index="2">
+                    <slots>
+                        <slot>
+                            <code>0x1000015</code>
+                            <mode>keyboard</mode>
+                        </slot>
+                    </slots>
+                </axisbutton>
+            </axis>
+            <button index="1">
+                <slots>
+                    <slot>
+                        <code>0x1000004</code>
+                        <mode>keyboard</mode>
+                    </slot>
+                </slots>
+            </button>
+        </set>
+        <set index="2">
+            <axis index="1">
+                <throttle>positive</throttle>
+            </axis>
+            <axis index="2">
+                <throttle>positive</throttle>
+            </axis>
+        </set>
+        <set index="3">
+            <axis index="1">
+                <throttle>positive</throttle>
+            </axis>
+            <axis index="2">
+                <throttle>positive</throttle>
+            </axis>
+        </set>
+        <set index="4">
+            <axis index="1">
+                <throttle>positive</throttle>
+            </axis>
+            <axis index="2">
+                <throttle>positive</throttle>
+            </axis>
+        </set>
+        <set index="5">
+            <axis index="1">
+                <throttle>positive</throttle>
+            </axis>
+            <axis index="2">
+                <throttle>positive</throttle>
+            </axis>
+        </set>
+        <set index="6">
+            <axis index="1">
+                <throttle>positive</throttle>
+            </axis>
+            <axis index="2">
+                <throttle>positive</throttle>
+            </axis>
+        </set>
+        <set index="7">
+            <axis index="1">
+                <throttle>positive</throttle>
+            </axis>
+            <axis index="2">
+                <throttle>positive</throttle>
+            </axis>
+        </set>
+        <set index="8">
+            <axis index="1">
+                <throttle>positive</throttle>
+            </axis>
+            <axis index="2">
+                <throttle>positive</throttle>
+            </axis>
+        </set>
+    </sets>
+</joystick>
