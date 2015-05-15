@@ -709,6 +709,7 @@ def runGamesWithMenu( layout, pacman, ghosts, display, numGames, record, numTrai
 
 def runGames( layout, pacman, ghosts, display, numGames, record, numTraining = 0, catchExceptions=False, timeout=30, keyboardGhosts=[], savedDisplay=None ):
     import __main__
+    import time
     __main__.__dict__['_display'] = display
 
     rules = ClassicGameRules(timeout)
@@ -742,6 +743,11 @@ def runGames( layout, pacman, ghosts, display, numGames, record, numTraining = 0
                 savedDisplay = game.run()
             else:
                 savedDisplay = game.run(savedDisplay)
+            
+            # Show win / loose message
+            display.showResultMessage(not game.state.isWin())
+            time.sleep(5)
+            display.hideResultMessage()
         
         if not beQuiet: games.append(game)
 
@@ -752,7 +758,7 @@ def runGames( layout, pacman, ghosts, display, numGames, record, numTraining = 0
             components = {'layout': layout, 'actions': game.moveHistory}
             cPickle.dump(components, f)
             f.close()
-
+        
     if (numGames-numTraining) > 0:
         scores = [game.state.getScore() for game in games]
         wins = [game.state.isWin() for game in games]

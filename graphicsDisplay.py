@@ -164,6 +164,9 @@ class PacmanGraphics:
         self.isWindowOpen = False
         self.isInitialized = False
         self.lastMode = None
+        self.fontSize = 24
+        self.textColor = PACMAN_COLOR
+        self.resultMessage = None
 
     def checkNullDisplay(self):
         return False
@@ -193,6 +196,35 @@ class PacmanGraphics:
         
         # Save last mode
         self.lastMode = mode
+        
+    def showResultMessage(self, isWin):
+        x = self.screen_width/2-self.gridSize
+        y = self.screen_height/2-self.gridSize
+        if isWin:
+            self.resultMessage = text( (x,y), self.textColor, "WIN", "Times", self.fontSize, "bold")
+        else:
+            self.resultMessage = text( (x-20,y), self.textColor, "LOOSE", "Times", self.fontSize, "bold")
+        refresh()
+    
+    def hideResultMessage(self):
+        if self.resultMessage is not None:
+            remove_from_screen(self.resultMessage)
+            self.resultMessage = None
+        
+    def toScreen(self, pos, y = None):
+        """
+          Translates a point relative from the bottom left of the info pane.
+        """
+        base = (self.layout.height + 1) * self.gridSize
+        if y == None:
+            x,y = pos
+        else:
+            x = pos
+
+        x = self.gridSize + x # Margin
+        y = base + y
+        return x,y
+                
 
     def startGraphics(self, state):
         self.layout = state.layout
@@ -314,11 +346,11 @@ class PacmanGraphics:
     def make_window(self, width, height):
         grid_width = (width-1) * self.gridSize
         grid_height = (height-1) * self.gridSize
-        screen_width = 2*self.gridSize + grid_width
-        screen_height = 2*self.gridSize + grid_height + INFO_PANE_HEIGHT
+        self.screen_width = 2*self.gridSize + grid_width
+        self.screen_height = 2*self.gridSize + grid_height + INFO_PANE_HEIGHT
 
-        begin_graphics(screen_width,
-                       screen_height,
+        begin_graphics(self.screen_width,
+                       self.screen_height,
                        BACKGROUND_COLOR,
                        "CS188 Pacman")
         
