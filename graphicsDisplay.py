@@ -164,12 +164,16 @@ class PacmanGraphics:
         self.gridSize = DEFAULT_GRID_SIZE * zoom
         self.capture = capture
         self.frameTime = frameTime
+        self.distributionImages = None
+        
         self.isWindowOpen = False
-        self.isInitialized = False
         self.lastMode = None
         self.fontSize = 24
         self.textColor = PACMAN_COLOR
         self.resultMessage = None
+        self.showTrainingScreen = False
+        self.trainingMessage = None
+        self.trainingScreenCount = 0
 
     def checkNullDisplay(self):
         return False
@@ -178,27 +182,53 @@ class PacmanGraphics:
     # TODO: Hay que agregar funciones de inicializacion para la pantalla de inicio y carga.
     # TODO: Hay que agregar un clear para los graficos del pacman, para la pantalla de inicio y la de carga.
     # TODO: Quizas sea mejor centralizar todo esto por medio de algo como un switch que autodetecte en que pantalla del flow se encuentra? -- HECHO
-    def initialize(self, state, mode = "pacman", isBlue = False):
+    def initialize(self, state = None, mode = "pacman", isBlue = False):
         
-        if self.lastMode == "pacman":   # Clear pacman procedure
+        if self.lastMode == "pacman":   # Clear pacman screen
             self.removeStaticObjects(not mode == "pacman")
             self.removeAgents()
             del self.infoPane
         
-        if mode == "pacman":            # Initialize pacman procedure
+        if self.lastMode == "training": # Clear training screen
+            self.hideTrainingMessage()
+        
+        if mode == "pacman":            # Initialize pacman screen
             self.isBlue = isBlue
             self.startGraphics(state)
-            # self.drawDistributions(state)
-            self.distributionImages = None  # Initialized lazily
             self.drawStaticObjects(state)
             self.drawAgentObjects(state)
 
             # Information
             self.previousState = state
+            
+        if mode == "training":          # Initialize training screen
+            if self.lastMode == "training":
+                self.trainingScreenCount += 1
+            self.showTrainingMessage()
         
         # Save last mode
         self.lastMode = mode
         
+    def showTrainingMessage(self):
+        x = self.screen_width/2-self.gridSize-60
+        y = self.screen_height/2-self.gridSize-5
+        
+        if self.trainingScreenCount % 4 == 0:
+            self.trainingMessage = text( (x,y), self.textColor, "TRAINING", "Times", self.fontSize, "bold")
+        if self.trainingScreenCount % 4 == 1:
+            self.trainingMessage = text( (x,y), self.textColor, "TRAINING.", "Times", self.fontSize, "bold")
+        if self.trainingScreenCount % 4 == 2:
+            self.trainingMessage = text( (x,y), self.textColor, "TRAINING..", "Times", self.fontSize, "bold")
+        if self.trainingScreenCount % 4 == 3:
+            self.trainingMessage = text( (x,y), self.textColor, "TRAINING...", "Times", self.fontSize, "bold")
+        refresh()
+            
+    def hideTrainingMessage(self):
+        if self.trainingMessage is not None:
+            remove_from_screen(self.trainingMessage)
+            self.trainingMessage = None
+        refresh()
+    
     def showResultMessage(self, isWin):
         x = self.screen_width/2-self.gridSize
         y = self.screen_height/2-self.gridSize-5
@@ -212,6 +242,7 @@ class PacmanGraphics:
         if self.resultMessage is not None:
             remove_from_screen(self.resultMessage)
             self.resultMessage = None
+        refresh()
         
     def toScreen(self, pos, y = None):
         """

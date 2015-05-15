@@ -686,6 +686,9 @@ def runGamesWithMenu( layout, pacman, ghosts, display, numGames, record, numTrai
         # Con la opcion --frameTime -1, se puede hacer por frames
     # TODO: Mostrar pantalla inicial y capturar seleccion
     
+    # Activamos mostrar la pantalla de entrenamiento durante el mismo
+    display.showTrainingScreen = True
+    
     # Una vez seleccionados damos 1 juego de practica y 3 juegos sin entrenamiento
     games, display = runGames(layout, pacman, ghosts, display, 1, record, 0, catchExceptions, timeout, keyboardGhosts)
     
@@ -723,6 +726,8 @@ def runGames( layout, pacman, ghosts, display, numGames, record, numTraining = 0
             import textDisplay
             gameDisplay = textDisplay.NullGraphics()
             rules.quiet = True
+            if display.showTrainingScreen:
+                display.initialize(None, "training")
         else:
             if savedDisplay is None:
                 gameDisplay = display
