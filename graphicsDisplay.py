@@ -150,6 +150,9 @@ class InfoPane:
 
     def clearMessage(self):
         pass
+    
+    def __del__(self):
+        remove_from_screen(self.scoreText)
 
 
 class PacmanGraphics:
@@ -180,12 +183,11 @@ class PacmanGraphics:
         if self.lastMode == "pacman":   # Clear pacman procedure
             self.removeStaticObjects(not mode == "pacman")
             self.removeAgents()
+            del self.infoPane
         
         if mode == "pacman":            # Initialize pacman procedure
             self.isBlue = isBlue
-            if not self.isWindowOpen:
-                self.startGraphics(state)
-
+            self.startGraphics(state)
             # self.drawDistributions(state)
             self.distributionImages = None  # Initialized lazily
             self.drawStaticObjects(state)
@@ -199,7 +201,7 @@ class PacmanGraphics:
         
     def showResultMessage(self, isWin):
         x = self.screen_width/2-self.gridSize
-        y = self.screen_height/2-self.gridSize
+        y = self.screen_height/2-self.gridSize-5
         if isWin:
             self.resultMessage = text( (x,y), self.textColor, "WIN", "Times", self.fontSize, "bold")
         else:
