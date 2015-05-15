@@ -665,50 +665,64 @@ def replayGame( layout, actions, display ):
     display.finish()
 
 def runGamesWithMenu( layout, pacman, ghosts, display, numGames, record, numTraining = 0, catchExceptions=False, timeout=30, keyboardGhosts=[], savedDisplay=None ):
+    import graphicsUtils
     import __main__
+    import time
     __main__.__dict__['_display'] = display
     
     max_players = len(ghosts)
     
-    # Pantalla inicial, esperar a que se seleccione la cantidad de jugadores.
-    # La cantidad maxima estara dada por max_players
-    
-    #import graphicsDisplay
-    #display.StartGraphics()
-    
-    #display.makeWindow(10, 10)
-    
-    # TODO: Inicializar pantalla, el display ya esta inicializado
-        # textDisplay.NullGraphics()
-        # textDisplay.PacmanGraphics()
-        # import graphicsDisplay
-        # graphicsDisplay.PacmanGraphics(options.zoom, frameTime = options.frameTime)
-        # Con la opcion --frameTime -1, se puede hacer por frames
-    # TODO: Mostrar pantalla inicial y capturar seleccion
-    
-    # Activamos mostrar la pantalla de entrenamiento durante el mismo
-    display.showTrainingScreen = True
-    
-    # Una vez seleccionados damos 1 juego de practica y 3 juegos sin entrenamiento
-    games, display = runGames(layout, pacman, ghosts, display, 1, record, 0, catchExceptions, timeout, keyboardGhosts)
-    
-    # Entrenamos 20 (?) epocas
-    # 3 juegos mas con dificultad media
-    print "Pacman is training..."
-    games, display = runGames(layout, pacman, ghosts, display, 21, record, 20, catchExceptions, timeout, keyboardGhosts, display)
-    
-    # Entrenamos 100 (?) epocas
-    # 3 juegos mas con dificultad dificil
-    print "Pacman is training..."
-    games, display = runGames(layout, pacman, ghosts, display, 101, record, 100, catchExceptions, timeout, keyboardGhosts, display)
-    
-    # Fin del juego, presentamos tabla de score para anotar un nombre.
-        # Esto en vez de una tabla podria ser el score minimo del dia
-        # En caso de un score minimo nuevo, se anotarian los mails del equipo en una planilla
-        # Habria que guardar este score en un archivo o poder darlo por parametro en caso de perdida
-    # Podriamos mostrar pantallas distintas para el caso de que el min_score sea superado y otra para el caso en el que no lo sea
-    # Luego de un tiempo de mostrar el score final, volveriamos a la pantalla inicial
+    while True:
+        # Pantalla inicial, esperar a que se seleccione la cantidad de jugadores.
+        # La cantidad maxima estara dada por max_players
         
+        # Display ya esta inicializado con graphicsDisplay
+        # Con la opcion --frameTime -1, se puede hacer por frames
+        
+        # Activamos mostrar la pantalla de entrenamiento durante el mismo
+        display.showTrainingScreen = True
+        
+        # Iniciamos la ventana
+        display.make_window(layout.width, layout.height)
+        
+        # Presentamos pantalla de inicio
+        display.initialize(None, "start")
+        
+        # Asi podemos esperar que una tecla sea presionada
+        keys = []
+        while 'Return' not in keys and 'Escape' not in keys:
+            keys = graphicsUtils.wait_for_keys()
+        
+        # Si la tecla presionada es escape, salimos.
+        if 'Escape' in keys:
+            exit()
+        
+        # Una vez seleccionados damos 1 juego de practica y 3 juegos sin entrenamiento
+        games, display = runGames(layout, pacman, ghosts, display, 1, record, 0, catchExceptions, timeout, keyboardGhosts)
+        
+        # Entrenamos 20 (?) epocas
+        # 3 juegos mas con dificultad media
+        print "Pacman is training..."
+        games, display = runGames(layout, pacman, ghosts, display, 21, record, 20, catchExceptions, timeout, keyboardGhosts, display)
+        
+        # Entrenamos 100 (?) epocas
+        # 3 juegos mas con dificultad dificil
+        print "Pacman is training..."
+        games, display = runGames(layout, pacman, ghosts, display, 101, record, 100, catchExceptions, timeout, keyboardGhosts, display)
+        
+        # Fin del juego, presentamos tabla de score para anotar un nombre.
+            # Esto en vez de una tabla podria ser el score minimo del dia
+            # En caso de un score minimo nuevo, se anotarian los mails del equipo en una planilla
+            # Habria que guardar este score en un archivo o poder darlo por parametro en caso de perdida
+        # Podriamos mostrar pantallas distintas para el caso de que el min_score sea superado y otra para el caso en el que no lo sea
+        # Luego de un tiempo de mostrar el score final, volveriamos a la pantalla inicial
+        
+        # TODO: Habria que guardar la matriz de estados del Pacman entrenado para:
+            # 1. Poder entrenarlo con muchas mas iteraciones
+            # 2. Evitar el tiempo de entrenamiento
+        # En el caso de hacerlo las pantallas de entrenamiento tendrian un simple fin humoristico
+        
+        # TODO: Esperar una tecla al comienzo de cada juego?
 
 def runGames( layout, pacman, ghosts, display, numGames, record, numTraining = 0, catchExceptions=False, timeout=30, keyboardGhosts=[], savedDisplay=None ):
     import __main__
