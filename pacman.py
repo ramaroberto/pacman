@@ -668,33 +668,36 @@ def runGamesWithMenu( layout, pacman, ghosts, display, numGames, record, numTrai
     import __main__
     __main__.__dict__['_display'] = display
     
-    rules = ClassicGameRules(timeout)
-    games = []
-    
     max_players = len(ghosts)
     
     # Pantalla inicial, esperar a que se seleccione la cantidad de jugadores.
     # La cantidad maxima estara dada por max_players
+    
+    #import graphicsDisplay
+    #display.StartGraphics()
+    
+    #display.makeWindow(10, 10)
+    
     # TODO: Inicializar pantalla, el display ya esta inicializado
         # textDisplay.NullGraphics()
         # textDisplay.PacmanGraphics()
+        # import graphicsDisplay
         # graphicsDisplay.PacmanGraphics(options.zoom, frameTime = options.frameTime)
         # Con la opcion --frameTime -1, se puede hacer por frames
     # TODO: Mostrar pantalla inicial y capturar seleccion
     
     # Una vez seleccionados damos 1 juego de practica y 3 juegos sin entrenamiento
-    games, display = runGames(layout, pacman, ghosts, display, 1, record, 0, catchExceptions, timeout, keyboardGhosts, savedDisplay=None)
-    
+    games, display = runGames(layout, pacman, ghosts, display, 1, record, 0, catchExceptions, timeout, keyboardGhosts)
     
     # Entrenamos 20 (?) epocas
     # 3 juegos mas con dificultad media
     print "Pacman is training..."
-    games, display = runGames(layout, pacman, ghosts, display, 21, record, 20, catchExceptions, timeout, keyboardGhosts, savedDisplay=None)
+    games, display = runGames(layout, pacman, ghosts, display, 21, record, 20, catchExceptions, timeout, keyboardGhosts, display)
     
     # Entrenamos 100 (?) epocas
     # 3 juegos mas con dificultad dificil
     print "Pacman is training..."
-    games, display = runGames(layout, pacman, ghosts, display, 101, record, 100, catchExceptions, timeout, keyboardGhosts, savedDisplay=None)
+    games, display = runGames(layout, pacman, ghosts, display, 101, record, 100, catchExceptions, timeout, keyboardGhosts, display)
     
     # Fin del juego, presentamos tabla de score para anotar un nombre.
         # Esto en vez de una tabla podria ser el score minimo del dia

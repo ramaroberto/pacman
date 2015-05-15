@@ -161,13 +161,15 @@ class PacmanGraphics:
         self.gridSize = DEFAULT_GRID_SIZE * zoom
         self.capture = capture
         self.frameTime = frameTime
+        self.isWindowOpen = False
 
     def checkNullDisplay(self):
         return False
 
     def initialize(self, state, isBlue = False):
         self.isBlue = isBlue
-        self.startGraphics(state)
+        if not self.isWindowOpen:
+            self.startGraphics(state)
 
         # self.drawDistributions(state)
         self.distributionImages = None  # Initialized lazily
@@ -182,9 +184,11 @@ class PacmanGraphics:
         layout = self.layout
         self.width = layout.width
         self.height = layout.height
-        self.make_window(self.width, self.height)
+        if not self.isWindowOpen:
+            self.make_window(self.width, self.height)
         self.infoPane = InfoPane(layout, self.gridSize)
         self.currentState = layout
+        self.isWindowOpen = True
 
     def drawDistributions(self, state):
         walls = state.layout.walls
@@ -284,7 +288,10 @@ class PacmanGraphics:
         self.infoPane.updateScore(newState.score)
         if 'ghostDistances' in dir(newState):
             self.infoPane.updateGhostDistances(newState.ghostDistances)
-
+    
+    def makeWindow(self, width, height):
+        self.make_window(width, height)
+        
     def make_window(self, width, height):
         grid_width = (width-1) * self.gridSize
         grid_height = (height-1) * self.gridSize
@@ -295,6 +302,9 @@ class PacmanGraphics:
                        screen_height,
                        BACKGROUND_COLOR,
                        "CS188 Pacman")
+        
+        self.isWindowOpen = True
+        #TODO: FIXTHIS
 
     def drawPacman(self, pacman, index):
         position = self.getPosition(pacman)
