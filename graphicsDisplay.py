@@ -174,14 +174,13 @@ class PacmanGraphics:
         self.showTrainingScreen = False
         self.trainingMessage = None
         self.trainingScreenCount = 0
+        self.startMessage = None
 
     def checkNullDisplay(self):
         return False
     
-    # TODO: Investigar la pantalla completa
-    # TODO: Hay que agregar funciones de inicializacion para la pantalla de inicio y carga.
-    # TODO: Hay que agregar un clear para los graficos del pacman, para la pantalla de inicio y la de carga.
-    # TODO: Quizas sea mejor centralizar todo esto por medio de algo como un switch que autodetecte en que pantalla del flow se encuentra? -- HECHO
+    # TODO: Investigar la pantalla completa :
+    #           http://stackoverflow.com/questions/7966119/display-fullscreen-mode-on-tkinter
     def initialize(self, state = None, mode = "pacman", isBlue = False):
         
         if self.lastMode == "pacman":   # Clear pacman screen
@@ -190,7 +189,11 @@ class PacmanGraphics:
             del self.infoPane
         
         if self.lastMode == "training": # Clear training screen
-            self.hideTrainingMessage()
+            if mode != "training":
+                self.hideTrainingMessage()
+                
+        if self.lastMode == "start":    # Clear start screen
+            self.hideStartMessage()
         
         if mode == "pacman":            # Initialize pacman screen
             self.isBlue = isBlue
@@ -205,22 +208,41 @@ class PacmanGraphics:
             if self.lastMode == "training":
                 self.trainingScreenCount += 1
             self.showTrainingMessage()
+            
+        if mode == "start":          # Initialize starting screen
+            self.showStartMessage()
         
         # Save last mode
         self.lastMode = mode
+    
+    def showStartMessage(self):
+        x = self.screen_width/2-self.gridSize-200
+        y = self.screen_height/2-self.gridSize-5
+        self.startMessage = text( (x,y), self.textColor, "Press <ENTER> to start the game.", "Times", self.fontSize, "bold")
         
+        
+    def hideStartMessage(self):
+        if self.startMessage is not None:
+            remove_from_screen(self.startMessage)
+            self.startMessage = None
+    
     def showTrainingMessage(self):
         x = self.screen_width/2-self.gridSize-60
         y = self.screen_height/2-self.gridSize-5
         
-        if self.trainingScreenCount % 4 == 0:
+        if self.trainingMessage is None:
             self.trainingMessage = text( (x,y), self.textColor, "TRAINING", "Times", self.fontSize, "bold")
+            self.trainingScreenCount = 0
+        
+        if self.trainingScreenCount % 4 == 0:
+            changeText(self.trainingMessage, "TRAINING")
         if self.trainingScreenCount % 4 == 1:
-            self.trainingMessage = text( (x,y), self.textColor, "TRAINING.", "Times", self.fontSize, "bold")
+            changeText(self.trainingMessage, "TRAINING.")
         if self.trainingScreenCount % 4 == 2:
-            self.trainingMessage = text( (x,y), self.textColor, "TRAINING..", "Times", self.fontSize, "bold")
+            changeText(self.trainingMessage, "TRAINING..")
         if self.trainingScreenCount % 4 == 3:
-            self.trainingMessage = text( (x,y), self.textColor, "TRAINING...", "Times", self.fontSize, "bold")
+            changeText(self.trainingMessage, "TRAINING...")
+            
         refresh()
             
     def hideTrainingMessage(self):
@@ -377,17 +399,18 @@ class PacmanGraphics:
         self.make_window(width, height)
         
     def make_window(self, width, height):
-        grid_width = (width-1) * self.gridSize
-        grid_height = (height-1) * self.gridSize
-        self.screen_width = 2*self.gridSize + grid_width
-        self.screen_height = 2*self.gridSize + grid_height + INFO_PANE_HEIGHT
+        if not self.isWindowOpen:
+            grid_width = (width-1) * self.gridSize
+            grid_height = (height-1) * self.gridSize
+            self.screen_width = 2*self.gridSize + grid_width
+            self.screen_height = 2*self.gridSize + grid_height + INFO_PANE_HEIGHT
 
-        begin_graphics(self.screen_width,
-                       self.screen_height,
-                       BACKGROUND_COLOR,
-                       "CS188 Pacman")
-        
-        self.isWindowOpen = True
+            begin_graphics(self.screen_width,
+                        self.screen_height,
+                        BACKGROUND_COLOR,
+                        "CS188 Pacman")
+            
+            self.isWindowOpen = True
         #TODO: Esto depende de gridSize, no deberia. O habria que buscar algun comando para resize.
 
     def drawPacman(self, pacman, index):
