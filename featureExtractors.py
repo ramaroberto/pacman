@@ -41,6 +41,26 @@ class CoordinateExtractor(FeatureExtractor):
         feats['action=%s' % action] = 1.0
         return feats
 
+def getClosestIntersection(pos, walls):
+    fringe = [(pos[0], pos[1], 0)]
+    expanded = set()    
+    while fringe:
+        pos_x, pos_y, dist = fringe.pop(0)
+        if (pos_x, pos_y) in expanded:
+            continue
+        expanded.add((pos_x, pos_y))
+        # check if there's an intersection at this location
+        nbrs = Actions.getLegalNeighbors((pos_x, pos_y), walls)
+        if len(nbrs) > 3: #left, right, stop || up, down, stop
+            return (dist, (int(pos_x), int(pos_y)))
+
+        # otherwise spread out from the location to its neighbours
+        for nbr_x, nbr_y in nbrs:
+            fringe.append((nbr_x, nbr_y, dist+1))
+
+    # no intersections found
+    return None
+
 def closestFood(pos, food, ghosts, walls):
     """
     closestFood -- this is similar to the function that we have
@@ -100,6 +120,13 @@ def distanceToGhosts(pos, ghosts, walls):
 def distanceToClosestGhost(pos, ghosts, walls):
     return min(distanceToGhosts(pos, ghosts, walls))
 
+def closestCoords(pos, coords, walls):
+    import operator
+    # TODO: Cambiar distanceToGhosts a distanceToCoords
+    dst = distanceToGhosts(pos, coords, walls)
+    min_index, min_value = min(enumerate(dst), key=operator.itemgetter(1))
+    return (int(coords[min_index][0]), int(coords[min_index][1]))
+
 def isScared(state, ghost):
     return state.getGhostStateFromPosition(ghost).isScared()
 
@@ -113,9 +140,7 @@ class SimpleExtractor(FeatureExtractor):
     """
     
     # Detectar cuando se encuentre en un tunel: Dar la distancia a la salida mas cercana hacia donde se este mirando?
-    # Detectar la posicion de todos los fantasmas: Un feature por fantasma, y asignar el valor 1/distGhost
-    # Diferenciar pills
-    # Diferenciar scared ghost
+    # TODO: Si el entrenamiento da por debajo de 100 puntos en los primeros 10 episodios, reiniciar.
 
     def getFeatures(self, state, action):
         # extract the grid of food and wall locations and get the ghost locations
@@ -143,21 +168,40 @@ class SimpleExtractor(FeatureExtractor):
         # if there is no danger of ghosts then add the food feature
         if (not features["#-of-ghosts-1-step-away"] and food[next_x][next_y]) and (dist < min(ghostsDists) and food[next_x][next_y]):
             features["eats-food"] = 1.0
-        
-        #closest_scared = None
-        for gi in range(len(ghostsDists)):
-            if not isScared(state, ghosts[gi]):
-                features["distance-to-ghost-"+str(gi+1)] = (float(ghostsDists[gi]) / (walls.width * walls.height))
-        #    else:
-        #        if (closest_scared is None) or (closest_scared < ghostsDists[gi]):
-        #            closest_scared = ghostsDists[gi]
-                    
-        #if closest_scared is not None:
-        #    features["distance-to-scared"] = (float(closest_scared) / (walls.width * walls.height))
 
+            # Distance to closest capsule
+            #capsulesDists = distanceToGhosts((next_x, next_y), capsules, walls)
+            #if len(capsulesDists) != 0:
+            #    features["distance-to-closest-capsule"] = min(capsulesDists) / (walls.width * walls.height)
+
+            # Distance to scared ghosts
+            #for gi in range(len(ghostsDists)):
+            #    if isScared(state, ghosts[gi]):
+            #        features["distance-to-scared-ghost-"+str(gi+1)] = (float(ghostsDists[gi]) / (walls.width * walls.height))
+        
+        # Distance to ghosts
+        #for gi in range(len(ghostsDists)):
+        #    if not isScared(state, ghosts[gi]):
+        #        features["distance-to-ghost-"+str(gi+1)] = (float(ghostsDists[gi]) / (walls.width * walls.height))
+
+        # b(c): Distancia entre el fantasma mas cercano y la interseccion mas cercana (con respecto a ese fantasma)
+
+        # Ghost danger
+        # a = walls.width + walls.height
+        # not_scared_ghosts = [g for g in ghosts if not isScared(state, g)]
+        # if len(not_scared_ghosts) > 1:
+        #     closestGhostCoords = closestCoords((next_x, next_y), ghosts, walls)
+        #     closestIntersection = getClosestIntersection((next_x, next_y), walls)
+        #     ghost2intersection = distanceToGhost(closestGhostCoords, closestIntersection[1], walls)
+        #     features["ghost-danger"] = (a + closestIntersection[0] - ghost2intersection) / float(a)
+            # features["ghost-danger"] =
+
+
+        # Distance to closest food
         if dist is not None:
             # make the distance a number less than one otherwise the update
             # will diverge wildly
             features["closest-food"] = float(dist) / (walls.width * walls.height)
+
         features.divideAll(10.0)
         return features

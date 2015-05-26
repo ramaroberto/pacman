@@ -765,7 +765,7 @@ def runGames( layout, pacman, ghosts, display, numGames, record, numTraining = 0
             
             # Show win / loose message
             display.showResultMessage(not game.state.isWin())
-            time.sleep(5)
+            time.sleep(1)
             display.hideResultMessage()
         
         if not beQuiet: games.append(game)
