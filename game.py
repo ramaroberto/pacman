@@ -492,7 +492,6 @@ class GameStateData:
         Creates an initial game state from a layout array (see layout.py).
         """
         self.food = layout.food.copy()
-        #self.capsules = []
         self.capsules = layout.capsules[:]
         self.layout = layout
         self.score = 0
