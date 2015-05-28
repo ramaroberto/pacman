@@ -167,9 +167,10 @@ class KeyboardGhost( GhostAgent ):
         def getAction( self, state):
             from graphicsUtils import keys_waiting
             from graphicsUtils import keys_pressed
+            from string import lower
             keys = keys_waiting() + keys_pressed()
             if keys != []:
-                self.keys = keys
+                self.keys = map((lambda s: lower(s) if len(s) == 1 else s), keys)
 
             legal = state.getLegalActions(self.index)
             move = self.getMove(legal)
