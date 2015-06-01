@@ -237,10 +237,11 @@ class PacmanGraphics:
         self.startMessage4 = text ((x,y), self.textColor, "3","Times", self.fontSize, "bold")
         posX = x - 20
         self.startMessage = text ((posX - 200 ,y), self.textColor, ">","Times", self.fontSize, "bold")
-        keys = wait_for_keys()
- 
+        
+        keys = []
         while 'Return' not in keys:
-
+            keys = wait_for_keys()
+            print 0
             if 'Right' in keys:
                 self.hideStartMessage()
                 if posX == x - 20:
@@ -255,9 +256,13 @@ class PacmanGraphics:
                     posX = x - 20
                 else: 
                     posX = posX - 100
-                self.startMessage = text ((posX,y), self.textColor, ">","Times", self.fontSize, "bold")  
+                self.startMessage = text ((posX,y), self.textColor, ">","Times", self.fontSize, "bold")
 
-            keys = wait_for_keys() 
+            # Wait for release
+            keys = keys_waiting() + keys_pressed()
+            while len(keys) != 0:
+                print len(keys)
+                keys = keys_waiting() + keys_pressed()
 
         self.clearStartScreen()
 
