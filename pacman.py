@@ -740,7 +740,7 @@ def runGames( layout, pacman, ghosts, display, numGames, record, numTraining = 0
             import textDisplay
             gameDisplay = textDisplay.NullGraphics()
             rules.quiet = True
-            if display.showTrainingScreen:
+            if hasattr(display, 'showTrainingScreen') and display.showTrainingScreen:
                 display.initialize(None, "training")
         else:
             if savedDisplay is None:
@@ -764,9 +764,10 @@ def runGames( layout, pacman, ghosts, display, numGames, record, numTraining = 0
                 savedDisplay = game.run(savedDisplay)
             
             # Show win / loose message
-            display.showResultMessage(not game.state.isWin())
-            time.sleep(1)
-            display.hideResultMessage()
+            if hasattr(display, 'showTrainingScreen'):
+                display.showResultMessage(not game.state.isWin())
+                time.sleep(1)
+                display.hideResultMessage()
         
         if not beQuiet: games.append(game)
 
