@@ -277,7 +277,9 @@ class GameState:
 
 SCARED_TIME = 40    # Moves ghosts are scared
 COLLISION_TOLERANCE = 0.7 # How close ghosts must be to Pacman to kill
-TIME_PENALTY = 1 # Number of points lost each round
+TIME_PENALTY = 0 # Number of points lost each round
+WIN_SCORE = 500
+LOSE_SCORE = -1000
 
 class ClassicGameRules:
     """
@@ -382,8 +384,10 @@ class PacmanRules:
             state.data._foodEaten = position
             # TODO: cache numFood?
             numFood = state.getNumFood()
+            # TODO: Aca se podria cambiar la condicion ganadora a numFood = nghosts o algo asi.
+            # Es decir, algo que no requiera comer todo y le deje un margen al Pacman.
             if numFood == 0 and not state.data._lose:
-                state.data.scoreChange += 500
+                state.data.scoreChange += WIN_SCORE
                 state.data._win = True
         # Eat capsule
         if( position in state.getCapsules() ):
@@ -471,7 +475,7 @@ class GhostRules:
             state.data._eaten[agentIndex] = True
         else:
             if not state.data._win:
-                state.data.scoreChange -= 500
+                state.data.scoreChange += LOSE_SCORE
                 state.data._lose = True
     collide = staticmethod( collide )
 
@@ -671,6 +675,9 @@ def runGamesWithMenu( layout, pacman, ghosts, display, numGames, record, numTrai
     __main__.__dict__['_display'] = display
     
     max_players = len(ghosts)
+
+    #mid_wights = {'ghost-1-distance': 7.505496605864388, 'closest-food': -40.75997789941222, '#-of-safe-intersections': 10.690708333578042, 'bias': 55.10377398236568, 'ghost-2-distance': 6.101402173364152, '#-of-ghosts-1-step-away': -2604.0274454689475, 'eats-food': 349.29952193184727}
+    #pacman.setWeights(mid_wights)
     
     while True:
         # Pantalla inicial, esperar a que se seleccione la cantidad de jugadores.
