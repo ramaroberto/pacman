@@ -165,9 +165,9 @@ class PacmanQAgent(QLearningAgent):
         For example, to change the exploration rate, try:
             python pacman.py -p PacmanQLearningAgent -a epsilon=0.1
 
-        alpha    - learning rate
         epsilon  - exploration rate
         gamma    - discount factor
+        alpha    - learning rate
         numTraining - number of training episodes, i.e. no learning after these many episodes
         """
         args['epsilon'] = epsilon
@@ -199,7 +199,10 @@ class ApproximateQAgent(PacmanQAgent):
     def __init__(self, extractor='IdentityExtractor', **args):
         self.featExtractor = util.lookup(extractor, globals())()
         PacmanQAgent.__init__(self, **args)
-        self.weights = util.Counter()
+        self.setWeights()
+
+    def setWeights(self, weights={}):
+        self.weights = util.Counter(weights)      
 
     def getWeights(self):
         return self.weights
@@ -233,4 +236,6 @@ class ApproximateQAgent(PacmanQAgent):
         if self.episodesSoFar == self.numTraining:
             # you might want to print your weights here for debugging
             "*** YOUR CODE HERE ***"
+            print "Final weights are: "
+            print self.weights
             pass
