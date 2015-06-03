@@ -224,45 +224,52 @@ class PacmanGraphics:
     
     def showStartMessage(self):
         x = self.screen_width/2-self.gridSize-200
-        y = self.screen_height/2-self.gridSize-55
-        self.startMessage5 = text ((x,y), self.textColor, "Seleccioná la cantidad de jugadores","Times", self.fontSize, "bold")
+        y = self.screen_height/2-self.gridSize-20
+
+        self.startMessage6 = text ((x,y-120), self.textColor, "PACMAN","arcadepix", self.fontSize*3, "bold")
+
+        self.startMessage5 = text ((x+120,y-30), self.textColor, "Inteligente","arcadepix", self.fontSize, "bold")
         y += 50 
-        self.startMessage1 = text ((x-50,y), self.textColor, "y presioná <Enter> para empezar a jugar","Times", self.fontSize, "bold")
+        self.startMessage1 = text ((x,y), self.textColor, "Cantidad de jugadores","arcadepix", self.fontSize, "bold")
         y += 50
         x += 100
-        self.startMessage2 = text ((x,y), self.textColor, "1","Times", self.fontSize, "bold")
+        self.startMessage2 = text ((x,y), self.textColor, "2","arcadepix", self.fontSize, "bold")
         x += 100
-        self.startMessage3 = text ((x,y), self.textColor, "2","Times", self.fontSize, "bold")
+        self.startMessage3 = text ((x,y), self.textColor, "3","arcadepix", self.fontSize, "bold")
         x += 100
-        self.startMessage4 = text ((x,y), self.textColor, "3","Times", self.fontSize, "bold")
+        self.startMessage4 = text ((x,y), self.textColor, "4","arcadepix", self.fontSize, "bold")
         posX = x - 20
-        self.startMessage = text ((posX - 200 ,y), self.textColor, ">","Times", self.fontSize, "bold")
+        self.startMessage = text ((posX - 200 ,y), self.textColor, ">","arcadepix", self.fontSize, "bold")
         
+        posX -= 200
         keys = []
-        while 'Return' not in keys:
+        while True:
             keys = wait_for_keys()
-            print 0
+            if 'Return' in keys:
+                break
+
             if 'Right' in keys:
                 self.hideStartMessage()
                 if posX == x - 20:
-                    posX = posX - 200
+                    posX -= 200
                 else:
-                    posX = posX + 100
-                self.startMessage = text ((posX,y), self.textColor, ">","Times", self.fontSize, "bold")
+                    posX += 100
+                self.startMessage = text ((posX,y), self.textColor, ">","arcadepix", self.fontSize, "bold")
 
             if 'Left' in keys:
                 self.hideStartMessage()
                 if posX == x - 220:
                     posX = x - 20
                 else: 
-                    posX = posX - 100
-                self.startMessage = text ((posX,y), self.textColor, ">","Times", self.fontSize, "bold")
+                    posX -= 100
+                self.startMessage = text ((posX,y), self.textColor, ">","arcadepix", self.fontSize, "bold")
 
             # Wait for release
             keys = keys_waiting() + keys_pressed()
             while len(keys) != 0:
-                print len(keys)
                 keys = keys_waiting() + keys_pressed()
+                sleep(0.05)
+
 
         self.clearStartScreen()
 
@@ -275,6 +282,7 @@ class PacmanGraphics:
         remove_from_screen(self.startMessage3)
         remove_from_screen(self.startMessage4)
         remove_from_screen(self.startMessage5)
+        remove_from_screen(self.startMessage6)
         
     def hideStartMessage(self):
         if self.startMessage is not None:
