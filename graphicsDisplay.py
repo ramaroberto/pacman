@@ -15,7 +15,7 @@
 
 
 from graphicsUtils import *
-import math, time
+import math, time, graphicsUtils
 from game import Directions
 
 ###########################
@@ -202,6 +202,8 @@ class PacmanGraphics:
         if self.lastMode == "start":    # Clear start screen
             self.hideStartMessage()
         
+        graphicsUtils._clear_keys()
+
         if mode == "pacman":            # Initialize pacman screen
             self.isBlue = isBlue
             self.startGraphics(state)
