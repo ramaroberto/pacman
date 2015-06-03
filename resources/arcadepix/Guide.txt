@@ -1,0 +1,30 @@
+Hi to all pixel phreaks!!!
+Now when you choose to use my fonts u got to know how to use them!
+
+First you got to install them in your Fonts directory! ........... heh :)
+
+Pixedpack fonts are specifically designed to look crisp (aliased) in Flash. However, they work in other applications as well. 
+The price for crispness is that you must follow the guidelines included here. If you do not, this font will blured like any 
+other font and look unsuitable.
+
+1. The fonts must be used at the intended point size for optimal results.
+    This is the table for all the fonts:
+
+-Pixed at 10 points or mutiplyed by whole number  eg. 20, 30, 40
+-Fivepix at 10 points or multiplyed by whole number  eg 20, 30, 40
+-Regupix at 10 points or multiplyed by whole number  eg. 20, 30 ,40
+-RegupixBold at 10 points or multiplyed by whole number  eg. 20, 30 ,40
+-Tinypix at 8 points or multiplyed by whole number  eg. 16, 24, 32
+-Flatpix at 10 points or multiplyed by whole number eg. 20, 30, 40
+-Arcadepix at at 10 points or multiplyed by whole number eg. 20, 30, 40
+-Zxpix at at 10 points or multiplyed by whole number eg. 20, 30, 40
+-Chicpix at 12 points or multiplyed by whole number eg 24, 36
+
+2. The font must be placed on a whole pixel (14.7 is no good. It must be 14.0 or 15.0). Use the Info panel in Flash to determine
+ it's x and y position and to set the point of registration. 
+
+3. Preview the your work at 100% in the. Otherwise the font will appear blured.
+
+If you have any questions mail me at reekee@00.co.uk
+
+Bye!!!
