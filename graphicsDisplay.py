@@ -247,6 +247,8 @@ class PacmanGraphics:
             keys = wait_for_keys()
             if 'Return' in keys:
                 break
+            if 'Escape' in keys:
+                exit()
 
             if 'Right' in keys:
                 self.hideStartMessage()
