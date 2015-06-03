@@ -277,9 +277,9 @@ class GameState:
 
 SCARED_TIME = 40    # Moves ghosts are scared
 COLLISION_TOLERANCE = 0.7 # How close ghosts must be to Pacman to kill
-TIME_PENALTY = 0 # Number of points lost each round
+TIME_PENALTY = 1 # Number of points lost each round
 WIN_SCORE = 500
-LOSE_SCORE = -1000
+LOSE_SCORE = -500
 
 class ClassicGameRules:
     """
@@ -789,10 +789,12 @@ def runGames( layout, pacman, ghosts, display, numGames, record, numTraining = 0
     if (numGames-numTraining) > 0:
         scores = [game.state.getScore() for game in games]
         wins = [game.state.isWin() for game in games]
+        progress = [float(game.state.getNumFood()) / rules.initialState.getNumFood() for game in games]
         winRate = wins.count(True)/ float(len(wins))
         print 'Average Score:', sum(scores) / float(len(scores))
         print 'Scores:       ', ', '.join([str(score) for score in scores])
         print 'Win Rate:      %d/%d (%.2f)' % (wins.count(True), len(wins), winRate)
+        print 'Progress Rate: %.2f %%' % ((sum(progress)/len(progress))*100)
         print 'Record:       ', ', '.join([ ['Loss', 'Win'][int(w)] for w in wins])
 
     return (games, display)
