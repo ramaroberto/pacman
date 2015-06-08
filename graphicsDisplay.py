@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 # graphicsDisplay.py
 # ------------------
 # Licensing Information:  You are free to use or extend these projects for
@@ -175,6 +177,11 @@ class PacmanGraphics:
         self.trainingMessage = None
         self.trainingScreenCount = 0
         self.startMessage = None
+        self.startMessage1 = None
+        self.startMessage2 = None
+        self.startMessage3 = None
+        self.startMessage4 = None
+        self.startMessage5 = None
 
     def checkNullDisplay(self):
         return False
@@ -217,9 +224,52 @@ class PacmanGraphics:
     
     def showStartMessage(self):
         x = self.screen_width/2-self.gridSize-200
-        y = self.screen_height/2-self.gridSize-5
-        self.startMessage = text( (x,y), self.textColor, "Press <ENTER> to start the game.", "Times", self.fontSize, "bold")
-        
+        y = self.screen_height/2-self.gridSize-55
+        self.startMessage5 = text ((x,y), self.textColor, "Seleccioná la cantidad de jugadores","Times", self.fontSize, "bold")
+        y += 50 
+        self.startMessage1 = text ((x-50,y), self.textColor, "y presioná <Enter> para empezar a jugar","Times", self.fontSize, "bold")
+        y += 50
+        x += 100
+        self.startMessage2 = text ((x,y), self.textColor, "1","Times", self.fontSize, "bold")
+        x += 100
+        self.startMessage3 = text ((x,y), self.textColor, "2","Times", self.fontSize, "bold")
+        x += 100
+        self.startMessage4 = text ((x,y), self.textColor, "3","Times", self.fontSize, "bold")
+        posX = x - 20
+        self.startMessage = text ((posX - 200 ,y), self.textColor, ">","Times", self.fontSize, "bold")
+        keys = wait_for_keys()
+ 
+        while 'Return' not in keys:
+
+            if 'Right' in keys:
+                self.hideStartMessage()
+                if posX == x - 20:
+                    posX = posX - 200
+                else:
+                    posX = posX + 100
+                self.startMessage = text ((posX,y), self.textColor, ">","Times", self.fontSize, "bold")
+
+            if 'Left' in keys:
+                self.hideStartMessage()
+                if posX == x - 220:
+                    posX = x - 20
+                else: 
+                    posX = posX - 100
+                self.startMessage = text ((posX,y), self.textColor, ">","Times", self.fontSize, "bold")  
+
+            keys = wait_for_keys() 
+
+        self.clearStartScreen()
+
+
+    def clearStartScreen(self):
+
+        remove_from_screen(self.startMessage)
+        remove_from_screen(self.startMessage1)
+        remove_from_screen(self.startMessage2)
+        remove_from_screen(self.startMessage3)
+        remove_from_screen(self.startMessage4)
+        remove_from_screen(self.startMessage5)
         
     def hideStartMessage(self):
         if self.startMessage is not None:
