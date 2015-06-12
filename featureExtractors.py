@@ -196,10 +196,10 @@ class SimpleExtractor(FeatureExtractor):
                 features["ghost-"+str(gi+1)+"-distance"] = (float(ghostsDists[gi]) / (walls.width * walls.height))
 
         # Distance to closest intersection
-        if action != 'Stop':
-            closestIntersection = getClosestIntersection((next_x, next_y), walls, action)
-            if closestIntersection is not None:
-                features["closest-intersection-distance"] = closestIntersection[0] / (walls.width * walls.height)
+        #if action != 'Stop':
+        #    closestIntersection = getClosestIntersection((next_x, next_y), walls, action)
+        #    if closestIntersection is not None:
+        #        features["closest-intersection-distance"] = closestIntersection[0] / (walls.width * walls.height)
 
         # b(c): Distancia entre el fantasma mas cercano y la interseccion mas cercana (con respecto a ese fantasma)
 
