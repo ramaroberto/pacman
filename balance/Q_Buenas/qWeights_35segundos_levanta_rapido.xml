@@ -1,0 +1,41 @@
+<?xml version="1.0" ?>
+<PyBrain>
+	<Network class="pybrain.structure.networks.feedforward.FeedForwardNetwork" name="FeedForwardNetwork-7">
+		<name val="'FeedForwardNetwork-7'"/>
+		<Modules>
+			<SigmoidLayer class="pybrain.structure.modules.sigmoidlayer.SigmoidLayer" inmodule="True" name="Input Layer">
+				<dim val="4"/>
+				<name val="'Input Layer'"/>
+			</SigmoidLayer>
+			<SigmoidLayer class="pybrain.structure.modules.sigmoidlayer.SigmoidLayer" name="Output Layer" outmodule="True">
+				<dim val="1"/>
+				<name val="'Output Layer'"/>
+			</SigmoidLayer>
+			<SigmoidLayer class="pybrain.structure.modules.sigmoidlayer.SigmoidLayer" name="Hidden Layer 1">
+				<dim val="5"/>
+				<name val="'Hidden Layer 1'"/>
+			</SigmoidLayer>
+			<SigmoidLayer class="pybrain.structure.modules.sigmoidlayer.SigmoidLayer" name="Hidden Layer 2">
+				<dim val="5"/>
+				<name val="'Hidden Layer 2'"/>
+			</SigmoidLayer>
+		</Modules>
+		<Connections>
+			<FullConnection class="pybrain.structure.connections.full.FullConnection" name="FullConnection-5">
+				<inmod val="Input Layer"/>
+				<outmod val="Hidden Layer 1"/>
+				<Parameters>[0.62063203188625871, -17.201678038980059, -0.88371598010209451, -0.54988681259946748, 6.7718759399968134, 3.7216042095754274, -4.3483770192493969, -0.79242480851109531, -3.4128242694465039, 3.4440437441468759, 0.13809276154139893, 0.15818237838926325, -0.86004887199463431, 0.2041051212914631, -1.7396202609805318, 0.0062913520999598226, -13.496019032030265, -4.5730268187577918, 4.7794052749693448, 1.9504801804061656]</Parameters>
+			</FullConnection>
+			<FullConnection class="pybrain.structure.connections.full.FullConnection" name="FullConnection-4">
+				<inmod val="Hidden Layer 1"/>
+				<outmod val="Hidden Layer 2"/>
+				<Parameters>[-2.1936839955162695, -7.3669629300819262, 2.153435138249955, 22.510540919152653, -2.87227044808738, -76.14884092449833, 14.874578905340714, -48.03399253271413, 217.81249660906491, -849.03407596301986, 6.9086692515744978, -0.0050011112521284717, 0.053068708573648496, -13.948698386237677, 132.91400852256635, 3.2899216540977894, -1.6744472476183854, -8.5308542381581631, -7.5591864373316797, 1.3037807535822901, 7300.0256949391578, -1.879133902902109, 5.3838210657582124, 13.066654893665707, 5857.7510754930472]</Parameters>
+			</FullConnection>
+			<FullConnection class="pybrain.structure.connections.full.FullConnection" name="FullConnection-6">
+				<inmod val="Hidden Layer 2"/>
+				<outmod val="Output Layer"/>
+				<Parameters>[5.4614725990293609, 1.5780888783849982, -3.7235186451678355, 12.248639795326349, -2.250415589595101]</Parameters>
+			</FullConnection>
+		</Connections>
+	</Network>
+</PyBrain>

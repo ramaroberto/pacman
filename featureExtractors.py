@@ -284,12 +284,11 @@ class SimpleExtractor(FeatureExtractor):
                 gi += 1
 
         # Distance to closest intersection
-        if len(ns_ghosts_dist) != 0:
-            #closestIntersection = getClosestIntersection((next_x, next_y), walls, [past_coord])
-            #if closestIntersection is not None:
-            #    features["closest-intersection-distance"] = closestIntersection[0] / float(walls.width * walls.height)
-            features["#-of-safe-intersections"] = (saferRouteDistance((x,y), ns_ghosts, walls, past_coord)) / float(walls.width * walls.height)
-            #print action, saferRouteDistance((x,y), ghosts, walls, past_coord), features["#-of-safe-intersections"]
+        #if action != 'Stop':
+        #    closestIntersection = getClosestIntersection((next_x, next_y), walls, action)
+        #    if closestIntersection is not None:
+        #        features["closest-intersection-distance"] = closestIntersection[0] / (walls.width * walls.height)
+        
         # b(c): Distancia entre el fantasma mas cercano y la interseccion mas cercana (con respecto a ese fantasma)
 
         # Ghost danger
