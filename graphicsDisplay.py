@@ -105,7 +105,7 @@ class InfoPane:
         return x,y
 
     def drawPane(self):
-        self.scoreText = text( self.toScreen(0, 0  ), self.textColor, "SCORE:    0", "Times", self.fontSize, "bold")
+        self.scoreText = text( self.toScreen(0, 0  ), self.textColor, "PUNTOS:    0", "arcadepix", self.fontSize, "bold")
 
     def initializeGhostDistances(self, distances):
         self.ghostDistanceText = []
@@ -117,16 +117,16 @@ class InfoPane:
             size = 10
 
         for i, d in enumerate(distances):
-            t = text( self.toScreen(self.width/2 + self.width/8 * i, 0), GHOST_COLORS[i+1], d, "Times", size, "bold")
+            t = text( self.toScreen(self.width/2 + self.width/8 * i, 0), GHOST_COLORS[i+1], d, "arcadepix", size, "bold")
             self.ghostDistanceText.append(t)
 
     def updateScore(self, score):
-        changeText(self.scoreText, "SCORE: % 4d" % score)
+        changeText(self.scoreText, "PUNTOS: % 4d" % score)
 
     def setTeam(self, isBlue):
         text = "RED TEAM"
         if isBlue: text = "BLUE TEAM"
-        self.teamText = text( self.toScreen(300, 0  ), self.textColor, text, "Times", self.fontSize, "bold")
+        self.teamText = text( self.toScreen(300, 0  ), self.textColor, text, "arcadepix", self.fontSize, "bold")
 
     def updateGhostDistances(self, distances):
         if len(distances) == 0: return
@@ -202,7 +202,8 @@ class PacmanGraphics:
         if self.lastMode == "start":    # Clear start screen
             self.hideStartMessage()
         
-        graphicsUtils._clear_keys()
+        #graphicsUtils._clear_keys()
+        #graphicsUtils.resetBindings()
 
         if mode == "pacman":            # Initialize pacman screen
             self.isBlue = isBlue
@@ -232,7 +233,7 @@ class PacmanGraphics:
 
         self.startMessage5 = text ((x+120,y-30), self.textColor, "Inteligente","arcadepix", self.fontSize, "bold")
         y += 50 
-        self.startMessage1 = text ((x,y), self.textColor, "Cantidad de jugadores","arcadepix", self.fontSize, "bold")
+        self.startMessage1 = text ((x,y), self.textColor, "Cantidad de jugadores:","arcadepix", self.fontSize, "bold")
         y += 50
         x += 100
         self.startMessage2 = text ((x,y), self.textColor, "2","arcadepix", self.fontSize, "bold")
@@ -298,7 +299,7 @@ class PacmanGraphics:
         y = self.screen_height/2-self.gridSize-5
         
         if self.trainingMessage is None:
-            self.trainingMessage = text( (x,y), self.textColor, "TRAINING", "Times", self.fontSize, "bold")
+            self.trainingMessage = text( (x,y), self.textColor, "TRAINING", "arcadepix", self.fontSize, "bold")
             self.trainingScreenCount = 0
         
         if self.trainingScreenCount % 4 == 0:
@@ -321,10 +322,12 @@ class PacmanGraphics:
     def showResultMessage(self, isWin):
         x = self.screen_width/2-self.gridSize
         y = self.screen_height/2-self.gridSize-5
+        # TODO: Fondo atras del mensaje
+        #self.resultMessageBackground = 
         if isWin:
-            self.resultMessage = text( (x,y), self.textColor, "WIN", "Times", self.fontSize, "bold")
+            self.resultMessage = text( (x,y), self.textColor, "WIN", "arcadepix", self.fontSize, "bold")
         else:
-            self.resultMessage = text( (x-20,y), self.textColor, "LOOSE", "Times", self.fontSize, "bold")
+            self.resultMessage = text( (x-20,y), self.textColor, "LOOSE", "arcadepix", self.fontSize, "bold")
         refresh()
     
     def hideResultMessage(self):
@@ -461,6 +464,7 @@ class PacmanGraphics:
         self.infoPane.updateScore(newState.score)
         if 'ghostDistances' in dir(newState):
             self.infoPane.updateGhostDistances(newState.ghostDistances)
+        #saveFrame()
     
     def makeWindow(self, width, height):
         self.make_window(width, height)
@@ -882,7 +886,7 @@ def add(x, y):
 # convert -delay 7 -loop 1 -compress lzw -layers optimize frame* out.gif
 # convert is part of imagemagick (freeware)
 
-SAVE_POSTSCRIPT = False
+SAVE_POSTSCRIPT = True
 POSTSCRIPT_OUTPUT_DIR = 'frames'
 FRAME_NUMBER = 0
 import os
