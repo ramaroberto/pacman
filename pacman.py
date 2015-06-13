@@ -277,7 +277,7 @@ class GameState:
 
 SCARED_TIME = 40    # Moves ghosts are scared
 COLLISION_TOLERANCE = 0.7 # How close ghosts must be to Pacman to kill
-TIME_PENALTY = 1 # Number of points lost each round
+TIME_PENALTY = 0 # Number of points lost each round
 WIN_SCORE = 500
 LOSE_SCORE = -500
 
@@ -695,17 +695,10 @@ def runGamesWithMenu( layout, pacman, ghosts, display, numGames, record, numTrai
         # Presentamos pantalla de inicio
         display.initialize(None, "start")
         
-        # Asi podemos esperar que una tecla sea presionada
-        keys = []
-        while 'Return' not in keys and 'Escape' not in keys:
-            keys = graphicsUtils.wait_for_keys()
-        
-        # Si la tecla presionada es escape, salimos.
-        if 'Escape' in keys:
-            exit()
-        
         # Una vez seleccionados damos 1 juego de practica y 3 juegos sin entrenamiento
-        games, display = runGames(layout, pacman, ghosts, display, 1, record, 0, catchExceptions, timeout, keyboardGhosts)
+        #pacman.setWeights({'ghost-1-distance': 18.667905261805245, 'closest-food': -84.14869086938502, '#-of-safe-intersections': 8.381229445965635, 'bias': 376.62628903913554, 'ghost-2-distance': 7.797186841612915, '#-of-ghosts-1-step-away': -3183.3103376329946})
+        pacman.setWeights({'ghost-1-distance': 12.94359242827336, 'closest-food': -52.46911132365448, '#-of-safe-intersections': 7.850194983873335, 'bias': 406.81171059627815, 'ghost-2-distance': 8.38662059308811, '#-of-ghosts-1-step-away': -2736.7332471165696})
+        games, display = runGames(layout, pacman, ghosts, display, 100, record, 0, catchExceptions, timeout, keyboardGhosts)
         
         # Entrenamos 20 (?) epocas
         # 3 juegos mas con dificultad media
@@ -758,6 +751,12 @@ def runGames( layout, pacman, ghosts, display, numGames, record, numTraining = 0
         
         # If there's keyboard ghosts and not in training mode
         if len(keyboardGhosts) > 0 and not beQuiet:
+            #for i in range(len(keyboardGhosts)):
+            #    keyboardGhosts[i].init()
+
+            #ghostType = loadAgent("KeyboardGhost", False)
+            #keyboardGhosts = [ghostType( i+1 ) for i in range( len(keyboardGhosts) )]
+
             game = rules.newGame( layout, pacman, keyboardGhosts, gameDisplay, beQuiet, catchExceptions)
         else:
             game = rules.newGame( layout, pacman, ghosts, gameDisplay, beQuiet, catchExceptions)
@@ -772,8 +771,13 @@ def runGames( layout, pacman, ghosts, display, numGames, record, numTraining = 0
             
             # Show win / loose message
             if hasattr(display, 'showTrainingScreen'):
+                from graphicsUtils import wait_for_keys
                 display.showResultMessage(not game.state.isWin())
-                time.sleep(1)
+
+                keys = []
+                while 'Return' not in keys:
+                    keys = wait_for_keys()
+                #time.sleep(1)
                 display.hideResultMessage()
         
         if not beQuiet: games.append(game)

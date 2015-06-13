@@ -128,47 +128,51 @@ class KeyboardGhost( GhostAgent ):
         SOUTH_KEY = ''
         STOP_KEY = ''
 
-        def __init__( self, index = 0 ):
-
-            self.lastMove = Directions.STOP
+        def __init__( self, index = 0 ):            
             self.index = index
             self.keys = []
 
             # Binding of keys
             # Up to 4 players
-            if index == 1:
+            if self.index == 1:
                 self.NORTH_KEY = 'Up'
                 self.WEST_KEY  = 'Left'
                 self.SOUTH_KEY = 'Down'
                 self.EAST_KEY  = 'Right'
                 self.STOP_KEY = 'Space'
 
-            if index == 2:
+            if self.index == 2:
                 self.NORTH_KEY = 'w'
                 self.WEST_KEY  = 'a'
                 self.SOUTH_KEY = 's'
                 self.EAST_KEY  = 'd'
                 self.STOP_KEY = 'q'
 
-            if index == 3:
+            if self.index == 3:
                 self.NORTH_KEY = 't'
                 self.WEST_KEY  = 'f'
                 self.SOUTH_KEY = 'g'
                 self.EAST_KEY  = 'h'
                 self.STOP_KEY = 'r'
 
-            if index == 4:
+            if self.index == 4:
                 self.NORTH_KEY = 'i'
                 self.WEST_KEY  = 'j'
                 self.SOUTH_KEY = 'k'
                 self.EAST_KEY  = 'l'
                 self.STOP_KEY = 'u'
 
+            self.init()
+
+        def init( self ):
+            self.lastMove = Directions.STOP
+
         def getAction( self, state):
             from graphicsUtils import keys_waiting
             from graphicsUtils import keys_pressed
             from string import lower
-            keys = keys_waiting() + keys_pressed()
+
+            keys = keys_pressed()
             if keys != []:
                 self.keys = map((lambda s: lower(s) if len(s) == 1 else s), keys)
 
@@ -180,10 +184,8 @@ class KeyboardGhost( GhostAgent ):
                 if self.lastMove in legal:
                     move = self.lastMove
 
-            if (self.STOP_KEY in self.keys) and Directions.STOP in legal: move = Directions.STOP
-
-            if move not in legal:
-                move = random.choice(legal)
+            #if move not in legal:
+            #    move = random.choice(legal)
 
             self.lastMove = move
             return move
