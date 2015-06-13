@@ -98,6 +98,17 @@ _leftclick_loc = None
 _rightclick_loc = None
 _ctrl_leftclick_loc = None
 
+def resetBindings():
+    _root_window.bind( "<KeyPress>", _keypress )
+    _root_window.bind( "<KeyRelease>", _keyrelease )
+    _root_window.bind( "<FocusIn>", _clear_keys )
+    _root_window.bind( "<FocusOut>", _clear_keys )
+    _root_window.bind( "<Button-1>", _leftclick )
+    _root_window.bind( "<Button-2>", _rightclick )
+    _root_window.bind( "<Button-3>", _rightclick )
+    _root_window.bind( "<Control-Button-1>", _ctrl_leftclick)
+    _clear_keys()
+
 def _leftclick(event):
     global _leftclick_loc
     _leftclick_loc = (event.x, event.y)
