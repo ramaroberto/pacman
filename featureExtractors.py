@@ -41,17 +41,17 @@ class CoordinateExtractor(FeatureExtractor):
         feats['action=%s' % action] = 1.0
         return feats
 
-def closestFood(pos, food, ghosts, walls):
+def closestFood(pos, food, ghosts, walls, area_coords=[]):
     """
     closestFood -- this is similar to the function that we have
     worked on in the search project; here its all in one place
     """
-    occupied = set()
+    fbd_coords = []
     for ghost in ghosts:
-        occupied.add((int(ghost[0]), int(ghost[1])))
+        fbd_coords.append((int(ghost[0]), int(ghost[1])))
     
     fringe = [(pos[0], pos[1], 0)]
-    expanded = set()    
+    expanded = set(fbd_coords)    
     while fringe:
         pos_x, pos_y, dist = fringe.pop(0)
         if (pos_x, pos_y) in expanded:
@@ -59,9 +59,8 @@ def closestFood(pos, food, ghosts, walls):
         expanded.add((pos_x, pos_y))
         # if we find a food at this location then exit
         # check if there's a ghost at location too
-        if food[pos_x][pos_y]:
-            if (pos_x, pos_y) not in occupied:
-                return dist
+        if food[pos_x][pos_y] and (int(pos_x), int(pos_y)) not in area_coords:
+            return dist
         # otherwise spread out from the location to its neighbours
         nbrs = Actions.getLegalNeighbors((pos_x, pos_y), walls)
         for nbr_x, nbr_y in nbrs:
@@ -112,11 +111,33 @@ def distanceToCoord(pos, coord, walls, fbd_coords=[]):
     # coord not found
     return None
 
-def distanceToCoords(pos, coords, walls):
-    result = []
-    for coord in coords:
-        result.append(distanceToCoord(pos, coord, walls))
-    return result
+def distanceToCoords(pos, coords, walls, fbd_coords=[]):
+    fringe = [(pos[0], pos[1], 0)]
+    expanded = set(fbd_coords)
+    coords = map((lambda coord: (int(coord[0]), int(coord[1]))), coords)
+    distances = {}
+    while fringe:
+        pos_x, pos_y, dist = fringe.pop(0)
+        if (pos_x, pos_y) in expanded:
+            continue
+        expanded.add((pos_x, pos_y))
+        # if we find the coord at this location then exit
+        if (int(pos_x), int(pos_y)) in coords:
+            distances[(int(pos_x), int(pos_y))] = dist
+            if len(distances) == len(coords):
+                break
+        # otherwise spread out from the location to its neighbours
+        nbrs = Actions.getLegalNeighbors((pos_x, pos_y), walls)
+        for nbr_x, nbr_y in nbrs:
+            fringe.append((nbr_x, nbr_y, dist+1))
+
+    return [distances[coord] for coord in coords if coord in distances]
+
+#def distanceToCoords(pos, coords, walls):
+#    result = []
+#    for coord in coords:
+#        result.append(distanceToCoord(pos, coord, walls))
+#    return result
 
 def distanceToClosestCoord(pos, coords, walls):
     return min(distanceToCoords(pos, coords, walls))
@@ -173,6 +194,21 @@ def saferRouteDistance(pos, ghosts, walls, past_coord):
     else:
         return max(safe_intscs,key=itemgetter(att2use))[att2use]
 
+def getCoordsArea(coords, rad):
+    area = set([])
+    for pos in coords:
+        pos = (int(pos[0]), int(pos[1]))
+        for i in range(rad+1):
+            area.add((pos[0]-i,pos[1]))
+            area.add((pos[0]+i,pos[1]))
+            area.add((pos[0],pos[1]-i))
+            area.add((pos[0],pos[1]+i))
+            area.add((pos[0]-i,pos[1]-i))
+            area.add((pos[0]-i,pos[1]+i))
+            area.add((pos[0]+i,pos[1]-i))
+            area.add((pos[0]+i,pos[1]+i))
+    return list(area)
+
 class SimpleExtractor(FeatureExtractor):
     """
     Returns simple features for a basic reflex Pacman:
@@ -182,6 +218,7 @@ class SimpleExtractor(FeatureExtractor):
     - whether a ghost is one step away
     """
     past_action = None
+    initial_food = 0
     
     # Detectar cuando se encuentre en un tunel: Dar la distancia a la salida mas cercana hacia donde se este mirando?
     # TODO: Si el entrenamiento da por debajo de 100 puntos en los primeros 10 episodios, reiniciar.
@@ -196,6 +233,10 @@ class SimpleExtractor(FeatureExtractor):
         features = util.Counter()
 
         features["bias"] = 1.0
+
+        if self.initial_food == 0:
+            self.initial_food = food.count()
+        ifood = self.initial_food
 
         # NOTA: En el paper se sugiere un atributo que indique si se preserva la misma direccion que antes. Intente implementarlo pero cuando se usa el Pacman en algun momento da una accion "None".
         #if self.past_action == action:
@@ -215,14 +256,15 @@ class SimpleExtractor(FeatureExtractor):
         features["#-of-ghosts-1-step-away"] = ghosts_besides
         
         # calculate distances
-        food_dist = closestFood((next_x, next_y), food, ghosts, walls)
+        area = getCoordsArea(ns_ghosts, int(round(3*pow(food.count()/float(ifood),2))))
+        food_dist = closestFood((next_x, next_y), food, ns_ghosts, walls, area)
         ns_ghosts_dist = distanceToCoords((next_x, next_y), ns_ghosts, walls)
 
         
         # if there is no danger of ghosts then add the food feature
         #(not ghosts_besides and food[next_x][next_y]) and
-        if (len(ns_ghosts_dist) == 0 or food_dist < min(ns_ghosts_dist)) and food[next_x][next_y]:
-            features["eats-food"] = 1.0            
+        #if (len(ns_ghosts_dist) == 0 or food_dist < min(ns_ghosts_dist)) and food[next_x][next_y]:
+        #    features["eats-food"] = 1.0            
 
             # Distance to scared ghosts
             #for gi in range(len(ghostsDists)):
@@ -235,8 +277,11 @@ class SimpleExtractor(FeatureExtractor):
         #    features["distance-to-closest-capsule"] = min(capsules_dists) / (walls.width * walls.height)
         
         # Distance to ghosts
-        for gi in range(len(ns_ghosts)):
-            features["ghost-"+str(gi+1)+"-distance"] = (float(ns_ghosts_dist[gi]) / (walls.width * walls.height))
+        gi = 0
+        for g in ghosts:
+            if not isScared(state, g):
+                features["ghost-"+str(gi+1)+"-distance"] = (float(ns_ghosts_dist[gi]) / (walls.width * walls.height))
+                gi += 1
 
         # Distance to closest intersection
         if len(ns_ghosts_dist) != 0:
