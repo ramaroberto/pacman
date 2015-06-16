@@ -382,11 +382,11 @@ class PacmanRules:
             state.data.food = state.data.food.copy()
             state.data.food[x][y] = False
             state.data._foodEaten = position
-            # TODO: cache numFood?
             numFood = state.getNumFood()
             # TODO: Aca se podria cambiar la condicion ganadora a numFood = nghosts o algo asi.
+            # NOTE: Condicion ganadora
             # Es decir, algo que no requiera comer todo y le deje un margen al Pacman.
-            if numFood == 0 and not state.data._lose:
+            if numFood == 2 and not state.data._lose:
                 state.data.scoreChange += WIN_SCORE
                 state.data._win = True
         # Eat capsule
@@ -668,6 +668,21 @@ def replayGame( layout, actions, display ):
 
     display.finish()
 
+def runHistoryGames(layout, pacman, ghosts, display, record, catchExceptions, timeout, keyboardGhosts):
+
+    n_games = 3
+
+    # n juegos sin entrenamiento
+    games, display = runGames(layout, pacman, ghosts, display, n_games, record, 0, catchExceptions, timeout, keyboardGhosts)
+
+    # n juegos con entrenamiento medio
+    pacman.setWeights({'ghost-1-distance': -0.2727409769903002, 'closest-food': -1.3621110078124379, 'bias': -63.15332754401044, 'ghost-2-distance': -0.3484213977577863, '#-of-ghosts-1-step-away': -455.4892921836355, 'eats-food': 165.53617208004533})
+    games, display = runGames(layout, pacman, ghosts, display, n_games+1, record, 1, catchExceptions, timeout, keyboardGhosts)
+
+    # n juegos con entrenamiento alto
+    pacman.setWeights({'ghost-1-distance': 1.7875370795732135, 'closest-food': -10.779379630972068, 'bias': 151.09488651951617, 'ghost-2-distance': 0.33101683742778343, '#-of-ghosts-1-step-away': -1133.2887795678223})
+    games, display = runGames(layout, pacman, ghosts, display, n_games+1, record, 1, catchExceptions, timeout, keyboardGhosts)
+
 def runGamesWithMenu( layout, pacman, ghosts, display, numGames, record, numTraining = 0, catchExceptions=False, timeout=30, keyboardGhosts=[], savedDisplay=None ):
     import graphicsUtils
     import __main__
@@ -694,21 +709,35 @@ def runGamesWithMenu( layout, pacman, ghosts, display, numGames, record, numTrai
         
         # Presentamos pantalla de inicio
         display.initialize(None, "start")
+
+        print display.selection
+
+        if display.selection == 1: # Historia
+            runHistoryGames(layout, pacman, ghosts, display, record, catchExceptions, timeout, keyboardGhosts)
         
+        if display.selection == 2: # Infinito
+            # 100 juegos con entrenamiento en alto
+            pacman.setWeights({'ghost-1-distance': 12.94359242827336, 'closest-food': -52.46911132365448, '#-of-safe-intersections': 7.850194983873335, 'bias': 406.81171059627815, 'ghost-2-distance': 8.38662059308811, '#-of-ghosts-1-step-away': -2736.7332471165696})
+            games, display = runGames(layout, pacman, ghosts, display, 2, record, 0, catchExceptions, timeout, keyboardGhosts)
+
+        if display.selection == 3: # Demo
+            # 10 juegos con entrenamiento alto, modo automatico
+            #pacman.setWeights({'ghost-1-distance': 7.90677231488944, 'closest-food': -8.138224422237991, 'bias': 138.95803700868277, 'ghost-2-distance': 0.06922797164020886, '#-of-ghosts-1-step-away': -2987.7748161856716, 'eats-food': 346.1886947796438})
+            pacman.setWeights({'ghost-1-distance': 1.7875370795732135, 'closest-food': -10.779379630972068, 'bias': 151.09488651951617, 'ghost-2-distance': 0.33101683742778343, '#-of-ghosts-1-step-away': -1133.2887795678223})
+            games, display = runGames(layout, pacman, ghosts, display, 2, record, 0, catchExceptions, timeout, [])
         # Una vez seleccionados damos 1 juego de practica y 3 juegos sin entrenamiento
         #pacman.setWeights({'ghost-1-distance': 18.667905261805245, 'closest-food': -84.14869086938502, '#-of-safe-intersections': 8.381229445965635, 'bias': 376.62628903913554, 'ghost-2-distance': 7.797186841612915, '#-of-ghosts-1-step-away': -3183.3103376329946})
-        pacman.setWeights({'ghost-1-distance': 12.94359242827336, 'closest-food': -52.46911132365448, '#-of-safe-intersections': 7.850194983873335, 'bias': 406.81171059627815, 'ghost-2-distance': 8.38662059308811, '#-of-ghosts-1-step-away': -2736.7332471165696})
-        games, display = runGames(layout, pacman, ghosts, display, 100, record, 0, catchExceptions, timeout, keyboardGhosts)
+        
         
         # Entrenamos 20 (?) epocas
         # 3 juegos mas con dificultad media
-        print "Pacman is training..."
-        games, display = runGames(layout, pacman, ghosts, display, 21, record, 20, catchExceptions, timeout, keyboardGhosts, display)
+        #print "Pacman is training..."
+        #games, display = runGames(layout, pacman, ghosts, display, 21, record, 20, catchExceptions, timeout, keyboardGhosts, display)
         
         # Entrenamos 100 (?) epocas
         # 3 juegos mas con dificultad dificil
-        print "Pacman is training..."
-        games, display = runGames(layout, pacman, ghosts, display, 101, record, 100, catchExceptions, timeout, keyboardGhosts, display)
+        #print "Pacman is training..."
+        #games, display = runGames(layout, pacman, ghosts, display, 101, record, 100, catchExceptions, timeout, keyboardGhosts, display)
         
         # Fin del juego, presentamos tabla de score para anotar un nombre.
             # Esto en vez de una tabla podria ser el score minimo del dia
@@ -769,15 +798,17 @@ def runGames( layout, pacman, ghosts, display, numGames, record, numTraining = 0
             else:
                 savedDisplay = game.run(savedDisplay)
             
-            # Show win / loose message
+            # Show win / loss message
             if hasattr(display, 'showTrainingScreen'):
                 from graphicsUtils import wait_for_keys
                 display.showResultMessage(not game.state.isWin())
 
                 keys = []
-                while 'Return' not in keys:
-                    keys = wait_for_keys()
-                #time.sleep(1)
+                if len(keyboardGhosts) > 0:
+                    while 'Return' not in keys:
+                        keys = wait_for_keys()
+                else:
+                    time.sleep(1)
                 display.hideResultMessage()
         
         if not beQuiet: games.append(game)

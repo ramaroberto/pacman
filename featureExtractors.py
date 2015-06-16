@@ -41,7 +41,7 @@ class CoordinateExtractor(FeatureExtractor):
         feats['action=%s' % action] = 1.0
         return feats
 
-def closestFood(pos, food, ghosts, walls, area_coords=[]):
+def closestFood(pos, food, ghosts, walls, area_coords=[], pills_coords=[]):
     """
     closestFood -- this is similar to the function that we have
     worked on in the search project; here its all in one place
@@ -49,7 +49,8 @@ def closestFood(pos, food, ghosts, walls, area_coords=[]):
     fbd_coords = []
     for ghost in ghosts:
         fbd_coords.append((int(ghost[0]), int(ghost[1])))
-    
+    coords = map((lambda coord: (int(coord[0]), int(coord[1]))), pills_coords)
+
     fringe = [(pos[0], pos[1], 0)]
     expanded = set(fbd_coords)    
     while fringe:
@@ -59,7 +60,7 @@ def closestFood(pos, food, ghosts, walls, area_coords=[]):
         expanded.add((pos_x, pos_y))
         # if we find a food at this location then exit
         # check if there's a ghost at location too
-        if food[pos_x][pos_y] and (int(pos_x), int(pos_y)) not in area_coords:
+        if (food[pos_x][pos_y] or (int(pos_x), int(pos_y)) in pills_coords) and (int(pos_x), int(pos_y)) not in area_coords:
             return dist
         # otherwise spread out from the location to its neighbours
         nbrs = Actions.getLegalNeighbors((pos_x, pos_y), walls)
@@ -229,6 +230,7 @@ class SimpleExtractor(FeatureExtractor):
         walls = state.getWalls()
         ghosts = state.getGhostPositions()
         capsules = state.getCapsules()
+        capsules = map((lambda coord: (int(coord[0]), int(coord[1]))), capsules)
 
         features = util.Counter()
 
@@ -256,15 +258,16 @@ class SimpleExtractor(FeatureExtractor):
         features["#-of-ghosts-1-step-away"] = ghosts_besides
         
         # calculate distances
-        area = getCoordsArea(ns_ghosts, int(round(3*pow(food.count()/float(ifood),2))))
-        food_dist = closestFood((next_x, next_y), food, ns_ghosts, walls, area)
+        area = getCoordsArea(ns_ghosts, int(round(2*pow(food.count()/float(ifood),2))))
+        food_dist = closestFood((next_x, next_y), food, ns_ghosts, walls, area, capsules)
         ns_ghosts_dist = distanceToCoords((next_x, next_y), ns_ghosts, walls)
 
         
         # if there is no danger of ghosts then add the food feature
         #(not ghosts_besides and food[next_x][next_y]) and
-        #if (len(ns_ghosts_dist) == 0 or food_dist < min(ns_ghosts_dist)) and food[next_x][next_y]:
-        #    features["eats-food"] = 1.0            
+        is_food_next = food[next_x][next_y] or (next_x, next_y) in capsules
+        if (len(ns_ghosts_dist) == 0 or food_dist < min(ns_ghosts_dist))/2 and (is_food_next):
+            features["eats-food"] = 1.0            
 
             # Distance to scared ghosts
             #for gi in range(len(ghostsDists)):

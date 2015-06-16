@@ -184,15 +184,21 @@ class PacmanGraphics:
         self.startMessage5 = None
         self.startMessage7 = None
 
+        self.selection = 1
+
     def checkNullDisplay(self):
         return False
     
     # TODO: Investigar la pantalla completa :
     #           http://stackoverflow.com/questions/7966119/display-fullscreen-mode-on-tkinter
     def initialize(self, state = None, mode = "pacman", isBlue = False):
+
+        self.selection = 1
         
+        print self.lastMode, mode
         if self.lastMode == "pacman":   # Clear pacman screen
-            self.removeStaticObjects(not mode == "pacman")
+            # not mode == "pacman"
+            self.removeStaticObjects(True)
             self.removeAgents()
             del self.infoPane
         
@@ -233,19 +239,19 @@ class PacmanGraphics:
         self.startMessage6 = text ((x,y-120), self.textColor, "PACMAN","arcadepix", self.fontSize*3, "bold")
 
         self.startMessage5 = text ((x+120,y-30), self.textColor, "Inteligente","arcadepix", self.fontSize, "bold")
-        y += 50 
-        self.startMessage1 = text ((x,y), self.textColor, "Cantidad de jugadores:","arcadepix", self.fontSize, "bold")
-        x += 400
-        y += 50
-        self.startMessage2 = text ((x+40,y), self.textColor, "2","arcadepix", self.fontSize, "bold")
+        #self.startMessage1 = text ((x,y), self.textColor, "Cantidad de jugadores:","arcadepix", self.fontSize, "bold")
+        x += 370
         self.startMessage7 = text ((x-260,y+30), self.textColor, "ᗧ  ", "arcadepix", self.fontSize, "bold")
         self.startMessage8 = text ((x-250,y+30), SCARED_COLOR, " •••    •• ", "arcadepix", self.fontSize, "bold")
         self.startMessage9 = text ((x-240,y+30), formatColor(0,.3,.9), "    ᗣ ", "arcadepix", self.fontSize, "bold")
 
+        x -= 270
+        y += 100
+        self.startMessage2 = text ((x+40,y), self.textColor, "Historia","arcadepix", self.fontSize, "bold")
         y += 50
-        self.startMessage3 = text ((x+40,y), self.textColor, "3","arcadepix", self.fontSize, "bold")
+        self.startMessage3 = text ((x+43,y), self.textColor, "Infinito","arcadepix", self.fontSize, "bold")
         y += 50
-        self.startMessage4 = text ((x+40,y), self.textColor, "4","arcadepix", self.fontSize, "bold")
+        self.startMessage4 = text ((x+68,y), self.textColor, "Demo","arcadepix", self.fontSize, "bold")
         posX = x - 20
         self.startMessage = text ((posX, y-100), self.textColor, ">","arcadepix", self.fontSize, "bold")
         posY = y - 100
@@ -261,16 +267,20 @@ class PacmanGraphics:
                 self.hideStartMessage()
                 if posY == y:
                     posY = y - 100
+                    self.selection = 1
                 else:
                     posY += 50
+                    self.selection += 1
                 self.startMessage = text ((posX,posY), self.textColor, ">","arcadepix", self.fontSize, "bold")
 
             if 'Up' in keys:
                 self.hideStartMessage()
                 if posY == y - 100:
                     posY = y
+                    self.selection = 3
                 else: 
                     posY -= 50
+                    self.selection -= 1
                 self.startMessage = text ((posX,posY), self.textColor, ">","arcadepix", self.fontSize, "bold")
 
             # Wait for release
@@ -334,7 +344,7 @@ class PacmanGraphics:
         if isWin:
             self.resultMessage = text( (x,y), self.textColor, "WIN", "arcadepix", self.fontSize, "bold")
         else:
-            self.resultMessage = text( (x-20,y), self.textColor, "LOOSE", "arcadepix", self.fontSize, "bold")
+            self.resultMessage = text( (x-20,y), self.textColor, "LOSS", "arcadepix", self.fontSize, "bold")
         refresh()
     
     def hideResultMessage(self):
