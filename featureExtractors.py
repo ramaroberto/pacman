@@ -258,6 +258,7 @@ class SimpleExtractor(FeatureExtractor):
         features["#-of-ghosts-1-step-away"] = ghosts_besides
         
         # calculate distances
+        #NOTA: getCoords limita el area de la que el pacman se aleja alrededor de un fantasma
         area = getCoordsArea(ns_ghosts, int(round(2*pow(food.count()/float(ifood),2))))
         food_dist = closestFood((next_x, next_y), food, ns_ghosts, walls, area, capsules)
         ns_ghosts_dist = distanceToCoords((next_x, next_y), ns_ghosts, walls)
