@@ -1,0 +1,12 @@
+1. Correr:
+sudo apt-get install libqt4-network libsdl2-2.0-0
+
+2. Instalar el paquete .deb antimicro dentro de la carpeta joystick:
+sudo dpkg -i antimicro_2.14-1.trusty1_amd64.deb
+
+3. Copiar ARCADEPI.TTF dentro de la carpeta arcadepix a ~/.fonts
+
+4. Conectar los joysticks y correr "antimicro" en la consola. Una vez que abran cargar los perfiles "Pacman-J1.joystick.amgp" y "Pacman-J2.joystick.amgp" dentro de "joystick/config". Si se aprietan los botones de los joysticks se pueden ver como responden en la ventana de antimicro.
+
+5. Volver a la carpeta principal del pacman y correr:
+./run_pacman.sh
