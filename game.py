@@ -530,6 +530,7 @@ class Game:
         self.totalAgentTimes = [0 for agent in agents]
         self.totalAgentTimeWarnings = [0 for agent in agents]
         self.agentTimeout = False
+        self.gameQuit = False
         import cStringIO
         self.agentOutput = [cStringIO.StringIO() for agent in agents]
 
@@ -616,6 +617,12 @@ class Game:
         numAgents = len( self.agents )
 
         while not self.gameOver:
+            from graphicsUtils import keys_pressed
+            keys = keys_pressed()
+            if 'Escape' in keys:
+                self.gameQuit = True
+                return self.display
+
             # Fetch the next agent
             agent = self.agents[agentIndex]
             move_time = 0

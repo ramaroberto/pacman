@@ -668,6 +668,7 @@ def replayGame( layout, actions, display ):
 
     display.finish()
 
+
 def runHistoryGames(layout, pacman, ghosts, display, record, catchExceptions, timeout, keyboardGhosts):
 
     n_games = 3
@@ -682,6 +683,7 @@ def runHistoryGames(layout, pacman, ghosts, display, record, catchExceptions, ti
     # n juegos con entrenamiento alto
     pacman.setWeights({'ghost-1-distance': 1.7875370795732135, 'closest-food': -10.779379630972068, 'bias': 151.09488651951617, 'ghost-2-distance': 0.33101683742778343, '#-of-ghosts-1-step-away': -1133.2887795678223})
     games, display = runGames(layout, pacman, ghosts, display, n_games+1, record, 1, catchExceptions, timeout, keyboardGhosts)
+
 
 def runGamesWithMenu( layout, pacman, ghosts, display, numGames, record, numTraining = 0, catchExceptions=False, timeout=30, keyboardGhosts=[], savedDisplay=None ):
     import graphicsUtils
@@ -712,17 +714,17 @@ def runGamesWithMenu( layout, pacman, ghosts, display, numGames, record, numTrai
 
         print display.selection
 
-        if display.selection == 1: # Historia
+        if display.selection == 1:  # Historia
             runHistoryGames(layout, pacman, ghosts, display, record, catchExceptions, timeout, keyboardGhosts)
         
-        if display.selection == 2: # Infinito
+        if display.selection == 2:  # Infinito
             # 100 juegos con entrenamiento en alto
             #pacman.setWeights({'ghost-1-distance': 12.94359242827336, 'closest-food': -52.46911132365448, '#-of-safe-intersections': 7.850194983873335, 'bias': 406.81171059627815, 'ghost-2-distance': 8.38662059308811, '#-of-ghosts-1-step-away': -2736.7332471165696})
             #pacman.setWeights({'ghost-1-distance': 1.7875370795732135, 'closest-food': -10.779379630972068, 'bias': 151.09488651951617, 'ghost-2-distance': 0.33101683742778343, '#-of-ghosts-1-step-away': -1133.2887795678223})
             pacman.setWeights({'ghost-1-distance': 1.202518331355906, 'closest-food': -17.52317063612606, 'bias': 244.92598082600026, 'ghost-2-distance': 0.39391543570184373, '#-of-ghosts-1-step-away': -1709.0923916869842})
             games, display = runGames(layout, pacman, ghosts, display, 10, record, 0, catchExceptions, timeout, keyboardGhosts)
 
-        if display.selection == 3: # Demo
+        if display.selection == 3:  # Demo
             # 10 juegos con entrenamiento alto, modo automatico
             #pacman.setWeights({'ghost-1-distance': 7.90677231488944, 'closest-food': -8.138224422237991, 'bias': 138.95803700868277, 'ghost-2-distance': 0.06922797164020886, '#-of-ghosts-1-step-away': -2987.7748161856716, 'eats-food': 346.1886947796438})
             #pacman.setWeights({'ghost-1-distance': 1.7875370795732135, 'closest-food': -10.779379630972068, 'bias': 151.09488651951617, 'ghost-2-distance': 0.33101683742778343, '#-of-ghosts-1-step-away': -1133.2887795678223})
@@ -800,6 +802,9 @@ def runGames( layout, pacman, ghosts, display, numGames, record, numTraining = 0
                 savedDisplay = game.run()
             else:
                 savedDisplay = game.run(savedDisplay)
+
+            if game.gameQuit:
+                return (games, display)
             
             # Show win / loss message
             if hasattr(display, 'showTrainingScreen'):

@@ -256,6 +256,7 @@ class PacmanGraphics:
         self.startMessage = text ((posX, y-100), self.textColor, ">","arcadepix", self.fontSize, "bold")
         posY = y - 100
         keys = []
+        wait_for_release()
         while True:
             keys = wait_for_keys()
             if 'Return' in keys:
