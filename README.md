@@ -1,4 +1,4 @@
-Inteligent Pacman
+Intelligent Pacman
 ===================
 
 ### Source
